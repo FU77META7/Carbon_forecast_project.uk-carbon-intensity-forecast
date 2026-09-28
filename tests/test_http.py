@@ -85,3 +85,9 @@ def test_params_are_encoded_with_literal_commas():
     opener = Opener([{"ok": 1}])
     _client(opener, []).get_json("http://x/api", {"hourly": "a,b", "lat": 51.5})
     assert opener.urls == ["http://x/api?hourly=a,b&lat=51.5"]
+
+
+def test_real_network_is_blocked_in_tests():
+    client = HttpClient(min_interval_s=0, max_retries=0, sleep=lambda s: None)
+    with pytest.raises(RuntimeError, match="network access is disabled"):
+        client.get_json("https://api.carbonintensity.org.uk/intensity")
