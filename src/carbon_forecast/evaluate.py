@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
-from carbon_forecast.config import REPORTS_DIR, load_settings, resolve  # noqa: E402
+from carbon_forecast.config import REPORTS_DIR, ROOT, load_settings, resolve  # noqa: E402
 from carbon_forecast.db import connect  # noqa: E402
 from carbon_forecast.reporting import df_to_markdown  # noqa: E402
 
@@ -388,6 +388,62 @@ def fig_by_hour(common: pd.DataFrame, path):
     plt.close(fig)
 
 
+# --- NESO lead-time check --------------------------------------------------------
+
+# Persistence lags (in half-hours) to compare the stored NESO forecast against.
+NESO_CHECK_LAGS = {"30 min": 1, "1 h": 2, "2 h": 4, "6 h": 12, "24 h": 48, "48 h": 96}
+
+
+def neso_lead_check(con, start: datetime, end: datetime) -> pd.DataFrame:
+    """MAE of the NESO stored forecast next to persistence at increasing lags, on the
+    same half-hours. If the stored forecast were issued 24-48h ahead, its error could
+    not match persistence at a lag of an hour or two."""
+    lags = ", ".join(f"lag(i.actual_gco2, {n}) OVER w AS p{n}" for n in NESO_CHECK_LAGS.values())
+    maes = ", ".join(f"avg(abs(p{n} - y)) AS p{n}" for n in NESO_CHECK_LAGS.values())
+    not_null = " AND ".join(f"p{n} IS NOT NULL" for n in NESO_CHECK_LAGS.values())
+    row = (
+        con.execute(
+            f"""
+        WITH s AS (
+            SELECT c.period_start_utc AS t, i.actual_gco2 AS y, i.forecast_gco2 AS neso, {lags}
+            FROM calendar c
+            LEFT JOIN stg_intensity i USING (period_start_utc)
+            WINDOW w AS (ORDER BY c.period_start_utc)
+        )
+        SELECT count(*) AS n, avg(abs(neso - y)) AS neso, {maes}
+        FROM s
+        WHERE t >= $start AND t <= $end AND y IS NOT NULL AND neso IS NOT NULL AND {not_null}
+        """,
+            {"start": start, "end": end},
+        )
+        .df()
+        .iloc[0]
+    )
+    rows = [{"predictor": "NESO stored forecast", "mae": row["neso"], "n": int(row["n"])}]
+    rows += [
+        {"predictor": f"Persistence ({name} lag)", "mae": row[f"p{n}"], "n": int(row["n"])}
+        for name, n in NESO_CHECK_LAGS.items()
+    ]
+    return pd.DataFrame(rows)
+
+
+def wf_mae_floor(h: pd.DataFrame) -> float:
+    """Lowest MAE of any non-NESO model at any horizon."""
+    return float(h[h["model"] != "neso_stored_forecast"]["mae"].min())
+
+
+# --- README ----------------------------------------------------------------------
+
+
+def replace_block(text: str, name: str, content: str) -> str:
+    """Replace the text between <!-- name:start --> and <!-- name:end -->."""
+    start, end = f"<!-- {name}:start -->", f"<!-- {name}:end -->"
+    i, j = text.find(start), text.find(end)
+    if i == -1 or j == -1 or j < i:
+        raise ValueError(f"markers for {name!r} not found")
+    return text[: i + len(start)] + "\n" + content.strip() + "\n" + text[j:]
+
+
 # --- report --------------------------------------------------------------------
 
 
@@ -433,6 +489,23 @@ def build(con, settings) -> str:
         }
     )
     week = pick_sample_week(df.dropna(subset=[TARGET, "weather_forecast", *interval_cols]))
+    test_start = datetime.combine(settings["evaluation"]["test_start"], datetime.min.time())
+    neso = neso_lead_check(con, test_start, df["target_time_utc"].max())
+    neso_mae = neso.loc[0, "mae"]
+    persist = neso.iloc[1:].reset_index(drop=True)
+    below = persist[persist["mae"] <= neso_mae]["predictor"].tolist()
+    above = persist[persist["mae"] > neso_mae]["predictor"].tolist()
+    neso_sentence = (
+        f"The stored NESO forecast (MAE {neso_mae:.1f}) is "
+        + (f"worse than {below[-1].lower()} " if below else "")
+        + ("but " if below and above else "")
+        + (f"better than {above[0].lower()}" if above else "")
+        + ". A forecast issued 24-48 hours ahead could not match persistence at such short "
+        "lags: the lowest MAE of any 24-48h model at any horizon in this backtest is "
+        f"{wf_mae_floor(h):.1f}. The "
+        "stored value is therefore a short-lead nowcast, and comparing it with the 24-48h "
+        "models is not like-for-like."
+    )
 
     h.assign(model_label=h["model"].map(lambda m: MODELS[m][0])).to_csv(
         REPORTS_DIR / "metrics_by_horizon.csv", index=False, float_format="%.4f"
@@ -522,6 +595,16 @@ def build(con, settings) -> str:
         f"(skill {wf[sk]:.2f}); without weather, MAE {nw['mae']:.1f} (skill {nw[sk]:.2f}). "
         f"Month by month, the weather-forecast model beats the seasonal naive baseline in "
         f"{wf_months} of {len(wins)} folds and the no-weather model in {nw_months} of {len(wins)}.",
+        "",
+        "## Is the NESO comparison like-for-like?",
+        "",
+        "The Carbon Intensity API keeps one stored forecast per half-hour, and its lead time is "
+        "not documented. Its error next to persistence at increasing lags, on the same "
+        "half-hours of the test period:",
+        "",
+        df_to_markdown(neso, ".2f"),
+        "",
+        neso_sentence,
         "",
         "## By horizon",
         "",
@@ -613,7 +696,62 @@ def build(con, settings) -> str:
         "![No-weather feature importance](figures/feature_importance_no_weather.png)",
         "",
     ]
-    return "\n".join(L)
+    readme = readme_blocks(
+        tab_overall, h, cov, neso, neso_sentence, folds, df, wf_months, len(wins)
+    )
+    return "\n".join(L), readme
+
+
+def readme_blocks(tab_overall, h, cov, neso, neso_sentence, folds, df, wf_months, n_months):
+    """Generated README sections, so its numbers always come from this run."""
+    sk = "skill_vs_" + REFERENCE
+    wf, sn = tab_overall.loc["weather_forecast"], tab_overall.loc[REFERENCE]
+    conformal = cov[(cov["interval"] == "conformal (CQR)") & (cov["horizons"] == "all horizons")]
+    raw = cov[(cov["interval"] == "raw quantile") & (cov["horizons"] == "all horizons")]
+    first, last = pd.Timestamp(folds[0]), df["target_time_utc"].max()
+    headline = (
+        f"Over a 12-month rolling-origin backtest ({first:%b %Y} to {last:%b %Y}, "
+        f"{int(wf['n']):,} forecasts, monthly retraining), LightGBM with leakage-free weather "
+        f"forecasts has an MAE of **{wf['mae']:.1f} gCO2/kWh** across 24-48 hour horizons, "
+        f"{100 * wf[sk]:.0f}% lower than a seasonal naive baseline ({sn['mae']:.1f}), and beats "
+        f"that baseline in {wf_months} of {n_months} months. Its conformally calibrated 10-90% "
+        f"intervals cover {conformal['coverage_%'].iloc[0]:.1f}% of outcomes (target 80%)."
+    )
+    t = tab_overall[["model", "mae", "rmse", "mape", sk]].rename(
+        columns={
+            "model": "Model",
+            "mae": "MAE",
+            "rmse": "RMSE",
+            "mape": "MAPE %",
+            sk: "Skill",
+        }
+    )
+    key = ["weather_forecast", "no_weather", REFERENCE, "oracle_weather"]
+    hsel = h[h["horizon_h"].isin([24, 30, 36, 42, 48]) & h["model"].isin(key)]
+    results = "\n".join(
+        [
+            f"All models are scored on the same {int(wf['n']):,} forecasts (origins every 6 hours, "
+            "49 horizons from 24h to 48h). Errors in gCO2/kWh; skill = 1 - MAE / MAE of the "
+            "seasonal naive baseline.",
+            "",
+            df_to_markdown(t.reset_index(drop=True), ".2f"),
+            "",
+            "*Observed weather* is a leaky upper bound (it uses the weather that actually "
+            "happened). The *NESO stored forecast* is a short-lead nowcast, not a 24-48h "
+            "forecast; see [Limitations](#limitations--honest-caveats).",
+            "",
+            "MAE by horizon:",
+            "",
+            df_to_markdown(wide(hsel, "horizon_h", "mae", key), ".1f"),
+            "",
+            f"Prediction intervals (10-90%): raw quantile LightGBM covers "
+            f"{raw['coverage_%'].iloc[0]:.1f}% of actuals; after conformal calibration, "
+            f"{conformal['coverage_%'].iloc[0]:.1f}% (mean width "
+            f"{raw['mean_width'].iloc[0]:.0f} -> {conformal['mean_width'].iloc[0]:.0f} gCO2/kWh).",
+        ]
+    )
+    neso_block = "\n".join([df_to_markdown(neso, ".1f"), "", neso_sentence])
+    return {"headline": headline, "results": results, "neso": neso_block}
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -622,11 +760,18 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--db", default=settings["db_path"])
     args = p.parse_args(argv)
     with connect(resolve(args.db)) as con:
-        report = build(con, settings)
+        report, readme = build(con, settings)
     out = REPORTS_DIR / "results.md"
     out.write_text(report)
     print(report)
     print(f"written to {out}")
+    readme_path = ROOT / "README.md"
+    text = readme_path.read_text()
+    if "<!-- results:start -->" in text:
+        for name, content in readme.items():
+            text = replace_block(text, name, content)
+        readme_path.write_text(text)
+        print(f"updated generated sections in {readme_path}")
 
 
 if __name__ == "__main__":
