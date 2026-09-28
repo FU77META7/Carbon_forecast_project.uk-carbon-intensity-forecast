@@ -3,9 +3,12 @@
 Verified behaviour (2026-09-28):
   * GET /intensity/{from}/{to} and /generation/{from}/{to} return every
     half-hour whose END time falls in [from, to], inclusive. Asking for slots
-    starting s..e therefore means from=s, to=e+30min; the response also contains
-    the slot ending at s, which the upsert absorbs harmlessly.
+    starting s..e therefore means from=s+30min, to=e+30min.
   * /intensity rejects ranges longer than 31 days (docs say 14).
+  * /generation returns HTTP 200 but silently drops everything after 31 Dec
+    when from/to straddle a year boundary, so requests are split at year end.
+  * Some periods are genuinely absent upstream (e.g. 2023-10-20 22:00 to
+    2023-10-22 19:00); those stay as gaps in the data quality report.
   * Earliest data: intensity 2017-09-12, generation mix 2018-05-11.
 """
 
@@ -86,10 +89,30 @@ ON CONFLICT (period_start_utc, fuel) DO UPDATE SET
     ingested_at_utc = excluded.ingested_at_utc
 """
 
-# A slot counts as present only once it has what we need from it; unsettled
-# slots (null actual) are re-requested on the next run.
-INTENSITY_PRESENT = "SELECT period_start_utc AS ts FROM raw_intensity WHERE actual_gco2 IS NOT NULL"
+# A slot counts as present once it has an actual, or once it was fetched more
+# than two days after it ended (the null is then an upstream gap, not an
+# unsettled period, and re-requesting it on every run would be pointless).
+INTENSITY_PRESENT = """
+    SELECT period_start_utc AS ts FROM raw_intensity
+    WHERE actual_gco2 IS NOT NULL OR ingested_at_utc >= period_end_utc + INTERVAL 2 DAY
+"""
 GENERATION_PRESENT = "SELECT DISTINCT period_start_utc AS ts FROM raw_generation"
+
+
+def split_at_year_end(chunks: list[tuple[datetime, datetime]]) -> list[tuple[datetime, datetime]]:
+    """Split chunks so that every request's slot END times fall in one calendar year.
+    /generation silently truncates a range whose from/to straddle 1 January
+    (verified 2026-09-28); /intensity does not, but splitting is harmless there."""
+    out = []
+    for s, e in chunks:
+        while (s + STEP).year != (e + STEP).year:
+            # Slot 23:00-23:30 on 31 Dec; the 23:30 slot ends on 1 Jan, so it
+            # belongs with the next year's request.
+            last_in_year = datetime((s + STEP).year + 1, 1, 1) - 2 * STEP
+            out.append((s, last_in_year))
+            s = last_in_year + STEP
+        out.append((s, e))
+    return out
 
 
 def _check(payload: dict) -> dict:
@@ -129,13 +152,14 @@ def ingest(
     Returns the planned chunks (inclusive first/last slot starts)."""
     path, present_sql, loader = _ENDPOINTS[endpoint]
     gaps = missing_ranges(con, present_sql, start, end, STEP)
-    chunks = plan_chunks(gaps, STEP, timedelta(days=max_days))
+    chunks = split_at_year_end(plan_chunks(gaps, STEP, timedelta(days=max_days)))
     log.info("%s: %d missing range(s) -> %d request(s)", endpoint, len(gaps), len(chunks))
     for i, (s, e) in enumerate(chunks, 1):
         if dry_run:
             log.info("  [dry-run] %s %s -> %s", endpoint, s, e)
             continue
-        url = f"{base_url}/{path}/{s.strftime(API_TS)}/{(e + STEP).strftime(API_TS)}"
+        # Periods are matched on their end time, so from/to are the first and last slot ends.
+        url = f"{base_url}/{path}/{(s + STEP).strftime(API_TS)}/{(e + STEP).strftime(API_TS)}"
         payload = client.get_json(url)
         n = loader(con, payload, datetime.now(UTC).replace(tzinfo=None))
         log.info("  [%d/%d] %s %s -> %s: %d rows", i, len(chunks), endpoint, s, e, n)

@@ -1,6 +1,6 @@
 import copy
 import re
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 from carbon_forecast.ingest import carbon_intensity as ci
 from tests.conftest import load_fixture
@@ -9,32 +9,46 @@ NOW = datetime(2026, 1, 1)
 
 
 class FakeCarbonAPI:
-    """Emulates the verified API semantics: returns every half-hour whose END
-    falls in [from, to], and rejects ranges over 31 days."""
+    """Emulates the verified API behaviour: returns every half-hour whose END
+    falls in [from, to], rejects ranges over 31 days, and /generation drops
+    everything after 31 Dec when from/to straddle a year boundary."""
 
     def __init__(self, null_actual_after: datetime | None = None):
         self.null_actual_after = null_actual_after
         self.calls: list[tuple[datetime, datetime]] = []
 
     def get_json(self, url, params=None):
-        f, t = (
-            datetime.strptime(x, ci.API_TS) for x in re.search(r"/([^/]+Z)/([^/]+Z)$", url).groups()
-        )
+        path, f, t = re.search(r"/(\w+)/([^/]+Z)/([^/]+Z)$", url).groups()
+        f, t = datetime.strptime(f, ci.API_TS), datetime.strptime(t, ci.API_TS)
         assert t - f <= timedelta(days=31), "API would reject this range"
         self.calls.append((f, t))
+        if path == "generation" and f.year != t.year:
+            t = datetime(f.year, 12, 31, 23, 30)
         rows, end = [], f
         while end <= t:
-            start = end - ci.STEP
-            actual = None if self.null_actual_after and start >= self.null_actual_after else 200
-            rows.append(
-                {
-                    "from": start.strftime(ci.API_TS),
-                    "to": end.strftime(ci.API_TS),
-                    "intensity": {"forecast": 190, "actual": actual, "index": "moderate"},
+            row = {"from": (end - ci.STEP).strftime(ci.API_TS), "to": end.strftime(ci.API_TS)}
+            if path == "generation":
+                row["generationmix"] = [
+                    {"fuel": "gas", "perc": 40.0},
+                    {"fuel": "wind", "perc": 60.0},
+                ]
+            else:
+                unsettled = self.null_actual_after and end - ci.STEP >= self.null_actual_after
+                row["intensity"] = {
+                    "forecast": 190,
+                    "actual": None if unsettled else 200,
+                    "index": "moderate",
                 }
-            )
+            rows.append(row)
             end += ci.STEP
         return {"data": rows}
+
+
+def test_split_at_year_end_keeps_request_ends_within_one_year():
+    s, e = datetime(2019, 12, 27), datetime(2020, 1, 25, 23, 30)
+    chunks = ci.split_at_year_end([(s, e)])
+    assert chunks == [(s, datetime(2019, 12, 31, 23, 0)), (datetime(2019, 12, 31, 23, 30), e)]
+    assert all((a + ci.STEP).year == (b + ci.STEP).year for a, b in chunks)
 
 
 def test_load_intensity_fixture_is_idempotent(con):
@@ -98,19 +112,36 @@ def test_incremental_ingest_fetches_only_missing(con):
     ci.ingest(con, api, "intensity", "https://x", start, end, max_days=30)
     assert len(api.calls) == first_calls  # nothing missing -> no requests
 
-    # Extending the window only fetches the new tail.
+    # Extending the window only fetches the new tail (from/to are slot END times).
     ci.ingest(con, api, "intensity", "https://x", start, end + timedelta(days=2), max_days=30)
-    assert api.calls[-1] == (end + ci.STEP, end + timedelta(days=2) + ci.STEP)
+    assert api.calls[-1] == (end + 2 * ci.STEP, end + timedelta(days=2) + ci.STEP)
 
 
-def test_unsettled_periods_are_refetched(con):
-    start, end = datetime(2020, 1, 1), datetime(2020, 1, 2, 23, 30)
-    api = FakeCarbonAPI(null_actual_after=datetime(2020, 1, 2, 12))
+def test_generation_across_new_year_is_complete(con):
+    api = FakeCarbonAPI()
+    start, end = datetime(2019, 12, 10), datetime(2020, 1, 20, 23, 30)
+    ci.ingest(con, api, "generation", "https://x", start, end, max_days=30)
+    n = con.execute("SELECT count(DISTINCT period_start_utc) FROM raw_generation").fetchone()[0]
+    assert n == (end - start) // ci.STEP + 1
+    assert all(f.year == t.year for f, t in api.calls)
+
+
+def test_recent_unsettled_periods_are_refetched(con):
+    today = datetime.now(UTC).replace(tzinfo=None, hour=0, minute=0, second=0, microsecond=0)
+    start, end = today - timedelta(days=1), today - ci.STEP
+    api = FakeCarbonAPI(null_actual_after=start + timedelta(hours=12))
     ci.ingest(con, api, "intensity", "https://x", start, end, max_days=30)
     api.null_actual_after = None
     ci.ingest(con, api, "intensity", "https://x", start, end, max_days=30)
-    assert api.calls[-1][0] == datetime(2020, 1, 2, 12)
-    assert (
-        con.execute("SELECT count(*) FROM raw_intensity WHERE actual_gco2 IS NULL").fetchone()[0]
-        == 0
-    )
+    assert api.calls[-1][0] == start + timedelta(hours=12, minutes=30)
+    nulls = "SELECT count(*) FROM raw_intensity WHERE actual_gco2 IS NULL"
+    assert con.execute(nulls).fetchone()[0] == 0
+
+
+def test_old_upstream_nulls_are_not_refetched_every_run(con):
+    # Fetched long after the periods ended -> a null actual is an upstream gap.
+    start, end = datetime(2020, 1, 1), datetime(2020, 1, 2, 23, 30)
+    api = FakeCarbonAPI(null_actual_after=datetime(2020, 1, 2, 12))
+    ci.ingest(con, api, "intensity", "https://x", start, end, max_days=30)
+    ci.ingest(con, api, "intensity", "https://x", start, end, max_days=30)
+    assert len(api.calls) == 1
