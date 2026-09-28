@@ -1,0 +1,393 @@
+horizon_h,model,n,mae,rmse,mape,skill_vs_seasonal_naive_day,model_label
+24.0000,weather_forecast,1444,26.4659,34.4166,25.3359,0.4427,LightGBM + weather forecast
+24.0000,no_weather,1444,38.8529,47.0298,41.3212,0.1818,"LightGBM, no weather"
+24.0000,seasonal_naive_day,1444,47.4855,61.0829,46.0268,0.0000,Seasonal naive (latest day)
+24.0000,seasonal_naive_week,1444,53.9134,68.2216,51.7233,-0.1354,Seasonal naive (week)
+24.0000,persistence,1444,41.7632,54.5370,39.0536,0.1205,Persistence
+24.0000,no_weather_short,1444,40.1666,49.0765,42.2138,0.1541,"LightGBM, no weather, short history"
+24.0000,oracle_weather,1444,25.2860,32.3331,25.1740,0.4675,LightGBM + observed weather (leaky oracle)
+24.0000,neso_stored_forecast,1444,9.5429,13.7502,8.8784,0.7990,NESO stored forecast (short-lead nowcast)
+24.5000,weather_forecast,1444,26.2076,33.9936,25.3945,0.4522,LightGBM + weather forecast
+24.5000,no_weather,1444,39.2472,47.3715,42.1699,0.1797,"LightGBM, no weather"
+24.5000,seasonal_naive_day,1444,47.8435,61.2691,46.6156,0.0000,Seasonal naive (latest day)
+24.5000,seasonal_naive_week,1444,54.2341,68.6384,52.4802,-0.1336,Seasonal naive (week)
+24.5000,persistence,1444,42.7452,55.7267,40.4197,0.1066,Persistence
+24.5000,no_weather_short,1444,40.3196,49.3588,42.8595,0.1573,"LightGBM, no weather, short history"
+24.5000,oracle_weather,1444,25.3435,32.1191,25.4588,0.4703,LightGBM + observed weather (leaky oracle)
+24.5000,neso_stored_forecast,1444,8.4820,12.3962,7.9835,0.8227,NESO stored forecast (short-lead nowcast)
+25.0000,weather_forecast,1444,26.2035,33.8497,25.7375,0.4559,LightGBM + weather forecast
+25.0000,no_weather,1444,39.6506,47.8208,43.2140,0.1767,"LightGBM, no weather"
+25.0000,seasonal_naive_day,1444,48.1614,61.6375,47.4120,0.0000,Seasonal naive (latest day)
+25.0000,seasonal_naive_week,1444,54.4086,68.9977,53.1764,-0.1297,Seasonal naive (week)
+25.0000,persistence,1444,43.8546,56.9631,42.1980,0.0894,Persistence
+25.0000,no_weather_short,1444,40.5944,49.7990,43.7556,0.1571,"LightGBM, no weather, short history"
+25.0000,oracle_weather,1444,25.5533,32.0563,25.9943,0.4694,LightGBM + observed weather (leaky oracle)
+25.0000,neso_stored_forecast,1444,8.3068,11.7706,8.1078,0.8275,NESO stored forecast (short-lead nowcast)
+25.5000,weather_forecast,1444,25.9596,33.6611,25.8736,0.4608,LightGBM + weather forecast
+25.5000,no_weather,1444,40.0234,48.2892,44.1430,0.1687,"LightGBM, no weather"
+25.5000,seasonal_naive_day,1444,48.1434,61.7007,48.1666,0.0000,Seasonal naive (latest day)
+25.5000,seasonal_naive_week,1444,54.4640,69.1241,53.7322,-0.1313,Seasonal naive (week)
+25.5000,persistence,1444,44.8116,57.8256,43.8484,0.0692,Persistence
+25.5000,no_weather_short,1444,40.7747,50.0864,44.4976,0.1531,"LightGBM, no weather, short history"
+25.5000,oracle_weather,1444,25.6593,32.1178,26.3195,0.4670,LightGBM + observed weather (leaky oracle)
+25.5000,neso_stored_forecast,1444,8.6911,13.8297,8.2009,0.8195,NESO stored forecast (short-lead nowcast)
+26.0000,weather_forecast,1444,26.0287,33.8089,26.2997,0.4597,LightGBM + weather forecast
+26.0000,no_weather,1444,40.5507,48.7630,45.3425,0.1583,"LightGBM, no weather"
+26.0000,seasonal_naive_day,1444,48.1759,61.7020,48.7298,0.0000,Seasonal naive (latest day)
+26.0000,seasonal_naive_week,1444,54.6392,69.3943,54.4847,-0.1342,Seasonal naive (week)
+26.0000,persistence,1444,45.9127,58.9881,45.7859,0.0470,Persistence
+26.0000,no_weather_short,1444,41.3324,50.5756,45.7450,0.1421,"LightGBM, no weather, short history"
+26.0000,oracle_weather,1444,25.3451,31.8158,26.2430,0.4739,LightGBM + observed weather (leaky oracle)
+26.0000,neso_stored_forecast,1444,8.8130,11.9103,8.7113,0.8171,NESO stored forecast (short-lead nowcast)
+26.5000,weather_forecast,1444,26.1815,34.0559,26.4697,0.4543,LightGBM + weather forecast
+26.5000,no_weather,1444,41.0225,49.1235,45.9444,0.1449,"LightGBM, no weather"
+26.5000,seasonal_naive_day,1444,47.9744,61.5739,48.7403,0.0000,Seasonal naive (latest day)
+26.5000,seasonal_naive_week,1444,54.9238,69.6825,54.9991,-0.1449,Seasonal naive (week)
+26.5000,persistence,1444,47.0561,59.8936,47.3069,0.0191,Persistence
+26.5000,no_weather_short,1444,41.7046,50.8298,46.1617,0.1307,"LightGBM, no weather, short history"
+26.5000,oracle_weather,1444,25.6752,32.3599,26.7886,0.4648,LightGBM + observed weather (leaky oracle)
+26.5000,neso_stored_forecast,1444,9.9266,14.6423,9.6442,0.7931,NESO stored forecast (short-lead nowcast)
+27.0000,weather_forecast,1444,26.3635,34.1600,26.7059,0.4514,LightGBM + weather forecast
+27.0000,no_weather,1444,41.4694,49.4704,46.8885,0.1370,"LightGBM, no weather"
+27.0000,seasonal_naive_day,1444,48.0540,61.5316,49.1557,0.0000,Seasonal naive (latest day)
+27.0000,seasonal_naive_week,1444,55.1357,69.6475,55.5596,-0.1474,Seasonal naive (week)
+27.0000,persistence,1444,48.5914,61.4448,49.7439,-0.0112,Persistence
+27.0000,no_weather_short,1444,42.1505,51.1239,46.9701,0.1229,"LightGBM, no weather, short history"
+27.0000,oracle_weather,1444,25.4813,32.0912,26.6402,0.4697,LightGBM + observed weather (leaky oracle)
+27.0000,neso_stored_forecast,1444,10.2521,14.0552,10.1413,0.7867,NESO stored forecast (short-lead nowcast)
+27.5000,weather_forecast,1444,26.6142,34.5399,26.6877,0.4449,LightGBM + weather forecast
+27.5000,no_weather,1444,41.2980,49.3547,46.3446,0.1386,"LightGBM, no weather"
+27.5000,seasonal_naive_day,1444,47.9411,61.3701,48.5936,0.0000,Seasonal naive (latest day)
+27.5000,seasonal_naive_week,1444,54.9640,69.3568,54.9174,-0.1465,Seasonal naive (week)
+27.5000,persistence,1444,50.2278,63.1082,51.3680,-0.0477,Persistence
+27.5000,no_weather_short,1444,42.0861,51.0802,46.3538,0.1221,"LightGBM, no weather, short history"
+27.5000,oracle_weather,1444,25.7904,32.6547,26.6371,0.4620,LightGBM + observed weather (leaky oracle)
+27.5000,neso_stored_forecast,1444,10.8850,15.3500,10.4253,0.7729,NESO stored forecast (short-lead nowcast)
+28.0000,weather_forecast,1444,26.4771,34.4336,26.6525,0.4452,LightGBM + weather forecast
+28.0000,no_weather,1444,41.0806,49.1545,46.0949,0.1392,"LightGBM, no weather"
+28.0000,seasonal_naive_day,1444,47.7244,61.0619,48.3271,0.0000,Seasonal naive (latest day)
+28.0000,seasonal_naive_week,1444,54.6240,68.9308,54.7462,-0.1446,Seasonal naive (week)
+28.0000,persistence,1444,51.9287,65.1836,53.5868,-0.0881,Persistence
+28.0000,no_weather_short,1444,41.8331,50.8392,46.2293,0.1234,"LightGBM, no weather, short history"
+28.0000,oracle_weather,1444,25.6335,32.7375,26.5019,0.4629,LightGBM + observed weather (leaky oracle)
+28.0000,neso_stored_forecast,1444,11.2396,15.8503,10.7549,0.7645,NESO stored forecast (short-lead nowcast)
+28.5000,weather_forecast,1444,26.5986,34.4542,26.5334,0.4391,LightGBM + weather forecast
+28.5000,no_weather,1444,40.9078,48.8878,45.5398,0.1373,"LightGBM, no weather"
+28.5000,seasonal_naive_day,1444,47.4197,60.9944,47.6785,0.0000,Seasonal naive (latest day)
+28.5000,seasonal_naive_week,1444,54.1967,68.5872,53.8711,-0.1429,Seasonal naive (week)
+28.5000,persistence,1444,53.9224,67.4898,55.1851,-0.1371,Persistence
+28.5000,no_weather_short,1444,41.5174,50.4096,45.6642,0.1245,"LightGBM, no weather, short history"
+28.5000,oracle_weather,1444,25.7927,32.8333,26.3242,0.4561,LightGBM + observed weather (leaky oracle)
+28.5000,neso_stored_forecast,1444,10.9841,16.1759,10.2679,0.7684,NESO stored forecast (short-lead nowcast)
+29.0000,weather_forecast,1441,26.8307,34.8261,26.4045,0.4313,LightGBM + weather forecast
+29.0000,no_weather,1441,40.5986,48.6525,44.7172,0.1395,"LightGBM, no weather"
+29.0000,seasonal_naive_day,1441,47.1804,60.8574,46.7997,0.0000,Seasonal naive (latest day)
+29.0000,seasonal_naive_week,1441,53.8793,68.3167,52.8930,-0.1420,Seasonal naive (week)
+29.0000,persistence,1441,55.4379,69.3089,56.2727,-0.1750,Persistence
+29.0000,no_weather_short,1441,41.3835,50.4062,45.0610,0.1229,"LightGBM, no weather, short history"
+29.0000,oracle_weather,1441,25.8274,32.8370,26.2024,0.4526,LightGBM + observed weather (leaky oracle)
+29.0000,neso_stored_forecast,1441,10.7814,14.8790,10.2993,0.7715,NESO stored forecast (short-lead nowcast)
+29.5000,weather_forecast,1444,26.5879,34.6859,26.0992,0.4387,LightGBM + weather forecast
+29.5000,no_weather,1444,40.6141,48.6409,44.2952,0.1426,"LightGBM, no weather"
+29.5000,seasonal_naive_day,1444,47.3670,61.0242,46.5126,0.0000,Seasonal naive (latest day)
+29.5000,seasonal_naive_week,1444,53.9806,68.3686,52.4514,-0.1396,Seasonal naive (week)
+29.5000,persistence,1444,56.5339,70.7031,56.3578,-0.1935,Persistence
+29.5000,no_weather_short,1444,41.3021,50.4129,44.5776,0.1280,"LightGBM, no weather, short history"
+29.5000,oracle_weather,1444,25.8948,32.8891,26.3062,0.4533,LightGBM + observed weather (leaky oracle)
+29.5000,neso_stored_forecast,1444,10.1704,14.1941,9.5313,0.7853,NESO stored forecast (short-lead nowcast)
+30.0000,weather_forecast,1443,26.5903,34.5080,25.6164,0.4397,LightGBM + weather forecast
+30.0000,no_weather,1443,40.4219,48.5947,43.4472,0.1482,"LightGBM, no weather"
+30.0000,seasonal_naive_day,1443,47.4574,61.0601,45.9894,0.0000,Seasonal naive (latest day)
+30.0000,seasonal_naive_week,1443,53.9224,68.2367,51.7269,-0.1362,Seasonal naive (week)
+30.0000,persistence,1443,57.4428,71.7158,56.2385,-0.2104,Persistence
+30.0000,no_weather_short,1443,41.2508,50.2681,43.7477,0.1308,"LightGBM, no weather, short history"
+30.0000,oracle_weather,1443,25.9116,32.9040,26.0962,0.4540,LightGBM + observed weather (leaky oracle)
+30.0000,neso_stored_forecast,1443,9.5495,13.7550,8.8846,0.7988,NESO stored forecast (short-lead nowcast)
+30.5000,weather_forecast,1443,26.3009,34.1202,25.6585,0.4499,LightGBM + weather forecast
+30.5000,no_weather,1443,40.7830,48.9658,44.2509,0.1471,"LightGBM, no weather"
+30.5000,seasonal_naive_day,1443,47.8143,61.2446,46.5771,0.0000,Seasonal naive (latest day)
+30.5000,seasonal_naive_week,1443,54.2426,68.6532,52.4835,-0.1344,Seasonal naive (week)
+30.5000,persistence,1443,58.4089,72.6903,57.5259,-0.2216,Persistence
+30.5000,no_weather_short,1443,41.2985,50.4566,44.2457,0.1363,"LightGBM, no weather, short history"
+30.5000,oracle_weather,1443,25.9392,32.8462,26.3924,0.4575,LightGBM + observed weather (leaky oracle)
+30.5000,neso_stored_forecast,1443,8.4872,12.4005,7.9883,0.8225,NESO stored forecast (short-lead nowcast)
+31.0000,weather_forecast,1443,26.3416,33.9859,26.0555,0.4528,LightGBM + weather forecast
+31.0000,no_weather,1443,41.1177,49.4105,45.2675,0.1458,"LightGBM, no weather"
+31.0000,seasonal_naive_day,1443,48.1358,61.6182,47.3787,0.0000,Seasonal naive (latest day)
+31.0000,seasonal_naive_week,1443,54.4186,69.0136,53.1821,-0.1305,Seasonal naive (week)
+31.0000,persistence,1443,59.3188,73.6581,59.2453,-0.2323,Persistence
+31.0000,no_weather_short,1443,41.4495,50.8058,44.9947,0.1389,"LightGBM, no weather, short history"
+31.0000,oracle_weather,1443,26.0582,32.7758,26.8705,0.4587,LightGBM + observed weather (leaky oracle)
+31.0000,neso_stored_forecast,1443,8.3112,11.7745,8.1119,0.8273,NESO stored forecast (short-lead nowcast)
+31.5000,weather_forecast,1443,26.1560,33.8974,26.2785,0.4565,LightGBM + weather forecast
+31.5000,no_weather,1443,41.5224,49.8920,46.2384,0.1371,"LightGBM, no weather"
+31.5000,seasonal_naive_day,1443,48.1220,61.6870,48.1405,0.0000,Seasonal naive (latest day)
+31.5000,seasonal_naive_week,1443,54.4761,69.1411,53.7416,-0.1320,Seasonal naive (week)
+31.5000,persistence,1443,59.7145,74.0331,60.2797,-0.2409,Persistence
+31.5000,no_weather_short,1443,41.7359,51.1004,45.7931,0.1327,"LightGBM, no weather, short history"
+31.5000,oracle_weather,1443,26.2042,32.9008,27.2439,0.4555,LightGBM + observed weather (leaky oracle)
+31.5000,neso_stored_forecast,1443,8.6951,13.8343,8.2043,0.8193,NESO stored forecast (short-lead nowcast)
+32.0000,weather_forecast,1443,26.2147,34.0834,26.7008,0.4557,LightGBM + weather forecast
+32.0000,no_weather,1443,42.0767,50.3164,47.3941,0.1263,"LightGBM, no weather"
+32.0000,seasonal_naive_day,1443,48.1587,61.6935,48.7103,0.0000,Seasonal naive (latest day)
+32.0000,seasonal_naive_week,1443,54.6528,69.4123,54.4969,-0.1348,Seasonal naive (week)
+32.0000,persistence,1443,60.0270,74.3087,61.2896,-0.2464,Persistence
+32.0000,no_weather_short,1443,42.1739,51.5380,46.9535,0.1243,"LightGBM, no weather, short history"
+32.0000,oracle_weather,1443,25.9663,32.7178,27.2028,0.4608,LightGBM + observed weather (leaky oracle)
+32.0000,neso_stored_forecast,1443,8.8157,11.9137,8.7136,0.8169,NESO stored forecast (short-lead nowcast)
+32.5000,weather_forecast,1443,26.3793,34.3691,26.8774,0.4499,LightGBM + weather forecast
+32.5000,no_weather,1443,42.4117,50.6375,47.8368,0.1156,"LightGBM, no weather"
+32.5000,seasonal_naive_day,1443,47.9536,61.5610,48.7159,0.0000,Seasonal naive (latest day)
+32.5000,seasonal_naive_week,1443,54.9369,69.7001,55.0104,-0.1456,Seasonal naive (week)
+32.5000,persistence,1443,59.9848,74.0524,61.3716,-0.2509,Persistence
+32.5000,no_weather_short,1443,42.6246,51.9037,47.4887,0.1111,"LightGBM, no weather, short history"
+32.5000,oracle_weather,1443,26.2502,33.1785,27.5314,0.4526,LightGBM + observed weather (leaky oracle)
+32.5000,neso_stored_forecast,1443,9.9314,14.6472,9.6486,0.7929,NESO stored forecast (short-lead nowcast)
+33.0000,weather_forecast,1443,26.6447,34.5059,27.1856,0.4453,LightGBM + weather forecast
+33.0000,no_weather,1443,42.8132,50.9483,48.5951,0.1086,"LightGBM, no weather"
+33.0000,seasonal_naive_day,1443,48.0305,61.5150,49.1300,0.0000,Seasonal naive (latest day)
+33.0000,seasonal_naive_week,1443,55.1469,69.6641,55.5697,-0.1482,Seasonal naive (week)
+33.0000,persistence,1443,59.7096,73.6010,61.6229,-0.2432,Persistence
+33.0000,no_weather_short,1443,43.0374,52.2594,48.2958,0.1040,"LightGBM, no weather, short history"
+33.0000,oracle_weather,1443,26.2069,33.0713,27.4486,0.4544,LightGBM + observed weather (leaky oracle)
+33.0000,neso_stored_forecast,1443,10.2571,14.0599,10.1461,0.7864,NESO stored forecast (short-lead nowcast)
+33.5000,weather_forecast,1443,26.9813,34.9197,27.1960,0.4370,LightGBM + weather forecast
+33.5000,no_weather,1443,42.6336,50.8410,47.9499,0.1104,"LightGBM, no weather"
+33.5000,seasonal_naive_day,1443,47.9238,61.3612,48.5821,0.0000,Seasonal naive (latest day)
+33.5000,seasonal_naive_week,1443,54.9889,69.3790,54.9437,-0.1474,Seasonal naive (week)
+33.5000,persistence,1443,58.8656,72.6362,60.4585,-0.2283,Persistence
+33.5000,no_weather_short,1443,42.8817,52.1562,47.6258,0.1052,"LightGBM, no weather, short history"
+33.5000,oracle_weather,1443,26.4890,33.4562,27.4034,0.4473,LightGBM + observed weather (leaky oracle)
+33.5000,neso_stored_forecast,1443,10.8815,15.3495,10.4226,0.7729,NESO stored forecast (short-lead nowcast)
+34.0000,weather_forecast,1443,26.7921,34.7918,27.0991,0.4385,LightGBM + weather forecast
+34.0000,no_weather,1443,42.2751,50.6207,47.5229,0.1140,"LightGBM, no weather"
+34.0000,seasonal_naive_day,1443,47.7124,61.0591,48.3251,0.0000,Seasonal naive (latest day)
+34.0000,seasonal_naive_week,1443,54.6528,68.9538,54.7770,-0.1455,Seasonal naive (week)
+34.0000,persistence,1443,58.8732,72.5303,60.7003,-0.2339,Persistence
+34.0000,no_weather_short,1443,42.4964,51.8137,47.3727,0.1093,"LightGBM, no weather, short history"
+34.0000,oracle_weather,1443,26.4551,33.6402,27.3232,0.4455,LightGBM + observed weather (leaky oracle)
+34.0000,neso_stored_forecast,1443,11.2280,15.8386,10.7470,0.7647,NESO stored forecast (short-lead nowcast)
+34.5000,weather_forecast,1443,26.9778,34.8683,27.0199,0.4310,LightGBM + weather forecast
+34.5000,no_weather,1443,41.9683,50.2749,46.8546,0.1148,"LightGBM, no weather"
+34.5000,seasonal_naive_day,1443,47.4096,60.9937,47.6825,0.0000,Seasonal naive (latest day)
+34.5000,seasonal_naive_week,1443,54.2335,68.6109,53.9080,-0.1439,Seasonal naive (week)
+34.5000,persistence,1443,58.8164,72.4934,60.2378,-0.2406,Persistence
+34.5000,no_weather_short,1443,42.1685,51.3881,46.6650,0.1105,"LightGBM, no weather, short history"
+34.5000,oracle_weather,1443,26.4436,33.5275,27.0787,0.4422,LightGBM + observed weather (leaky oracle)
+34.5000,neso_stored_forecast,1443,10.9709,16.1622,10.2609,0.7686,NESO stored forecast (short-lead nowcast)
+35.0000,weather_forecast,1440,27.1370,35.2049,26.7943,0.4247,LightGBM + weather forecast
+35.0000,no_weather,1440,41.5724,50.0626,45.7698,0.1187,"LightGBM, no weather"
+35.0000,seasonal_naive_day,1440,47.1722,60.8586,46.8067,0.0000,Seasonal naive (latest day)
+35.0000,seasonal_naive_week,1440,53.9097,68.3399,52.9254,-0.1428,Seasonal naive (week)
+35.0000,persistence,1440,58.5118,72.1849,59.0437,-0.2404,Persistence
+35.0000,no_weather_short,1440,41.9557,51.2678,45.8839,0.1106,"LightGBM, no weather, short history"
+35.0000,oracle_weather,1440,26.5313,33.6863,26.9605,0.4376,LightGBM + observed weather (leaky oracle)
+35.0000,neso_stored_forecast,1440,10.7660,14.8588,10.2922,0.7718,NESO stored forecast (short-lead nowcast)
+35.5000,weather_forecast,1443,26.9372,35.1131,26.4731,0.4312,LightGBM + weather forecast
+35.5000,no_weather,1443,41.4129,49.8138,45.1749,0.1255,"LightGBM, no weather"
+35.5000,seasonal_naive_day,1443,47.3541,61.0206,46.5153,0.0000,Seasonal naive (latest day)
+35.5000,seasonal_naive_week,1443,54.0173,68.3922,52.4873,-0.1407,Seasonal naive (week)
+35.5000,persistence,1443,57.9224,71.5674,57.5848,-0.2232,Persistence
+35.5000,no_weather_short,1443,41.7714,51.1856,45.2898,0.1179,"LightGBM, no weather, short history"
+35.5000,oracle_weather,1443,26.5910,33.6496,27.0764,0.4385,LightGBM + observed weather (leaky oracle)
+35.5000,neso_stored_forecast,1443,10.1733,14.1981,9.5353,0.7852,NESO stored forecast (short-lead nowcast)
+36.0000,weather_forecast,1442,26.7865,34.8974,25.8225,0.4354,LightGBM + weather forecast
+36.0000,no_weather,1442,41.0553,49.5775,44.1282,0.1347,"LightGBM, no weather"
+36.0000,seasonal_naive_day,1442,47.4473,61.0595,45.9948,0.0000,Seasonal naive (latest day)
+36.0000,seasonal_naive_week,1442,53.9584,68.2603,51.7619,-0.1372,Seasonal naive (week)
+36.0000,persistence,1442,57.3752,70.9152,55.9492,-0.2092,Persistence
+36.0000,no_weather_short,1442,41.6753,51.0296,44.2775,0.1217,"LightGBM, no weather, short history"
+36.0000,oracle_weather,1442,26.4235,33.6704,26.6514,0.4431,LightGBM + observed weather (leaky oracle)
+36.0000,neso_stored_forecast,1442,9.5541,13.7595,8.8895,0.7986,NESO stored forecast (short-lead nowcast)
+36.5000,weather_forecast,1442,26.5935,34.5513,25.9516,0.4437,LightGBM + weather forecast
+36.5000,no_weather,1442,41.2017,49.8101,44.6851,0.1382,"LightGBM, no weather"
+36.5000,seasonal_naive_day,1442,47.8072,61.2468,46.5844,0.0000,Seasonal naive (latest day)
+36.5000,seasonal_naive_week,1442,54.2788,68.6770,52.5190,-0.1354,Seasonal naive (week)
+36.5000,persistence,1442,57.1512,70.6489,56.0428,-0.1955,Persistence
+36.5000,no_weather_short,1442,41.7708,51.0837,44.7453,0.1263,"LightGBM, no weather, short history"
+36.5000,oracle_weather,1442,26.4741,33.5166,26.9173,0.4462,LightGBM + observed weather (leaky oracle)
+36.5000,neso_stored_forecast,1442,8.4896,12.4041,7.9917,0.8224,NESO stored forecast (short-lead nowcast)
+37.0000,weather_forecast,1442,26.5416,34.3531,26.2705,0.4486,LightGBM + weather forecast
+37.0000,no_weather,1442,41.5015,50.1941,45.6086,0.1377,"LightGBM, no weather"
+37.0000,seasonal_naive_day,1442,48.1311,61.6226,47.3873,0.0000,Seasonal naive (latest day)
+37.0000,seasonal_naive_week,1442,54.4501,69.0371,53.2151,-0.1313,Seasonal naive (week)
+37.0000,persistence,1442,57.1546,70.7288,56.8072,-0.1875,Persistence
+37.0000,no_weather_short,1442,41.9877,51.3629,45.5433,0.1276,"LightGBM, no weather, short history"
+37.0000,oracle_weather,1442,26.5290,33.3880,27.3150,0.4488,LightGBM + observed weather (leaky oracle)
+37.0000,neso_stored_forecast,1442,8.3141,11.7781,8.1158,0.8273,NESO stored forecast (short-lead nowcast)
+37.5000,weather_forecast,1442,26.4090,34.2968,26.5265,0.4512,LightGBM + weather forecast
+37.5000,no_weather,1442,41.9156,50.7096,46.5789,0.1289,"LightGBM, no weather"
+37.5000,seasonal_naive_day,1442,48.1172,61.6914,48.1484,0.0000,Seasonal naive (latest day)
+37.5000,seasonal_naive_week,1442,54.5062,69.1645,53.7738,-0.1328,Seasonal naive (week)
+37.5000,persistence,1442,57.2642,70.8008,57.6640,-0.1901,Persistence
+37.5000,no_weather_short,1442,42.2418,51.6640,46.3376,0.1221,"LightGBM, no weather, short history"
+37.5000,oracle_weather,1442,26.6201,33.5032,27.5981,0.4468,LightGBM + observed weather (leaky oracle)
+37.5000,neso_stored_forecast,1442,8.6969,13.8382,8.2072,0.8193,NESO stored forecast (short-lead nowcast)
+38.0000,weather_forecast,1442,26.4271,34.3847,26.8857,0.4512,LightGBM + weather forecast
+38.0000,no_weather,1442,42.3946,51.0962,47.7117,0.1196,"LightGBM, no weather"
+38.0000,seasonal_naive_day,1442,48.1533,61.6972,48.7159,0.0000,Seasonal naive (latest day)
+38.0000,seasonal_naive_week,1442,54.6803,69.4352,54.5272,-0.1355,Seasonal naive (week)
+38.0000,persistence,1442,57.1914,70.6925,58.2577,-0.1877,Persistence
+38.0000,no_weather_short,1442,42.6822,52.0665,47.4803,0.1136,"LightGBM, no weather, short history"
+38.0000,oracle_weather,1442,26.2799,33.1658,27.4621,0.4542,LightGBM + observed weather (leaky oracle)
+38.0000,neso_stored_forecast,1442,8.8058,11.9025,8.7081,0.8171,NESO stored forecast (short-lead nowcast)
+38.5000,weather_forecast,1442,26.7451,34.7290,27.1517,0.4422,LightGBM + weather forecast
+38.5000,no_weather,1442,42.6546,51.4067,48.1176,0.1104,"LightGBM, no weather"
+38.5000,seasonal_naive_day,1442,47.9487,61.5653,48.7199,0.0000,Seasonal naive (latest day)
+38.5000,seasonal_naive_week,1442,54.9598,69.7219,55.0367,-0.1462,Seasonal naive (week)
+38.5000,persistence,1442,57.0201,70.5774,58.1091,-0.1892,Persistence
+38.5000,no_weather_short,1442,43.1040,52.4614,48.0143,0.1010,"LightGBM, no weather, short history"
+38.5000,oracle_weather,1442,26.4991,33.5734,27.7342,0.4473,LightGBM + observed weather (leaky oracle)
+38.5000,neso_stored_forecast,1442,9.9175,14.6309,9.6391,0.7932,NESO stored forecast (short-lead nowcast)
+39.0000,weather_forecast,1442,26.9053,34.8256,27.3430,0.4397,LightGBM + weather forecast
+39.0000,no_weather,1442,42.9616,51.6004,48.8934,0.1054,"LightGBM, no weather"
+39.0000,seasonal_naive_day,1442,48.0215,61.5154,49.1266,0.0000,Seasonal naive (latest day)
+39.0000,seasonal_naive_week,1442,55.1699,69.6858,55.5947,-0.1489,Seasonal naive (week)
+39.0000,persistence,1442,56.6345,70.2471,58.2002,-0.1794,Persistence
+39.0000,no_weather_short,1442,43.5198,52.7701,48.8116,0.0937,"LightGBM, no weather, short history"
+39.0000,oracle_weather,1442,26.3131,33.4297,27.4979,0.4521,LightGBM + observed weather (leaky oracle)
+39.0000,neso_stored_forecast,1442,10.2503,14.0549,10.1409,0.7865,NESO stored forecast (short-lead nowcast)
+39.5000,weather_forecast,1442,27.3177,35.3228,27.4213,0.4299,LightGBM + weather forecast
+39.5000,no_weather,1442,42.8075,51.4168,48.2621,0.1066,"LightGBM, no weather"
+39.5000,seasonal_naive_day,1442,47.9147,61.3615,48.5743,0.0000,Seasonal naive (latest day)
+39.5000,seasonal_naive_week,1442,55.0125,69.4008,54.9676,-0.1481,Seasonal naive (week)
+39.5000,persistence,1442,56.5062,70.1153,57.7824,-0.1793,Persistence
+39.5000,no_weather_short,1442,43.4358,52.7494,48.0599,0.0935,"LightGBM, no weather, short history"
+39.5000,oracle_weather,1442,26.6549,33.8738,27.4971,0.4437,LightGBM + observed weather (leaky oracle)
+39.5000,neso_stored_forecast,1442,10.8724,15.3418,10.4135,0.7731,NESO stored forecast (short-lead nowcast)
+40.0000,weather_forecast,1442,28.3234,36.5932,28.6024,0.4062,LightGBM + weather forecast
+40.0000,no_weather,1442,42.4381,51.0896,47.8963,0.1103,"LightGBM, no weather"
+40.0000,seasonal_naive_day,1442,47.7018,61.0578,48.3112,0.0000,Seasonal naive (latest day)
+40.0000,seasonal_naive_week,1442,54.6824,68.9770,54.8060,-0.1463,Seasonal naive (week)
+40.0000,persistence,1442,56.8481,70.3916,58.5115,-0.1917,Persistence
+40.0000,no_weather_short,1442,42.9704,52.2935,47.7041,0.0992,"LightGBM, no weather, short history"
+40.0000,oracle_weather,1442,26.5601,33.8602,27.3740,0.4432,LightGBM + observed weather (leaky oracle)
+40.0000,neso_stored_forecast,1442,11.2240,15.8378,10.7417,0.7647,NESO stored forecast (short-lead nowcast)
+40.5000,weather_forecast,1442,28.4618,36.5460,28.5013,0.3995,LightGBM + weather forecast
+40.5000,no_weather,1442,42.1576,50.6887,47.1975,0.1106,"LightGBM, no weather"
+40.5000,seasonal_naive_day,1442,47.3988,60.9923,47.6629,0.0000,Seasonal naive (latest day)
+40.5000,seasonal_naive_week,1442,54.2677,68.6346,53.9412,-0.1449,Seasonal naive (week)
+40.5000,persistence,1442,57.1276,70.7182,58.4759,-0.2053,Persistence
+40.5000,no_weather_short,1442,42.5369,51.8604,46.8345,0.1026,"LightGBM, no weather, short history"
+40.5000,oracle_weather,1442,26.5147,33.6420,27.0395,0.4406,LightGBM + observed weather (leaky oracle)
+40.5000,neso_stored_forecast,1442,10.9716,16.1657,10.2597,0.7685,NESO stored forecast (short-lead nowcast)
+41.0000,weather_forecast,1439,28.7826,37.0914,28.4441,0.3897,LightGBM + weather forecast
+41.0000,no_weather,1439,41.7533,50.3062,46.0590,0.1147,"LightGBM, no weather"
+41.0000,seasonal_naive_day,1439,47.1612,60.8571,46.7831,0.0000,Seasonal naive (latest day)
+41.0000,seasonal_naive_week,1439,53.9458,68.3636,52.9604,-0.1439,Seasonal naive (week)
+41.0000,persistence,1439,57.3621,71.0395,58.0915,-0.2163,Persistence
+41.0000,no_weather_short,1439,42.3081,51.7412,45.9676,0.1029,"LightGBM, no weather, short history"
+41.0000,oracle_weather,1439,26.6050,33.6903,26.9270,0.4359,LightGBM + observed weather (leaky oracle)
+41.0000,neso_stored_forecast,1439,10.7637,14.8593,10.2869,0.7718,NESO stored forecast (short-lead nowcast)
+41.5000,weather_forecast,1442,28.5990,36.8596,28.0476,0.3959,LightGBM + weather forecast
+41.5000,no_weather,1442,41.4277,50.0053,45.2461,0.1250,"LightGBM, no weather"
+41.5000,seasonal_naive_day,1442,47.3440,61.0199,46.4931,0.0000,Seasonal naive (latest day)
+41.5000,seasonal_naive_week,1442,54.0541,68.4159,52.5228,-0.1417,Seasonal naive (week)
+41.5000,persistence,1442,57.0485,70.6514,57.1951,-0.2050,Persistence
+41.5000,no_weather_short,1442,42.2041,51.7364,45.4797,0.1086,"LightGBM, no weather, short history"
+41.5000,oracle_weather,1442,26.4408,33.4217,26.8453,0.4415,LightGBM + observed weather (leaky oracle)
+41.5000,neso_stored_forecast,1442,10.1796,14.2030,9.5410,0.7850,NESO stored forecast (short-lead nowcast)
+42.0000,weather_forecast,1441,28.2826,36.5991,27.2842,0.4037,LightGBM + weather forecast
+42.0000,no_weather,1441,41.1035,49.6956,44.1329,0.1334,"LightGBM, no weather"
+42.0000,seasonal_naive_day,1441,47.4323,61.0536,45.9645,0.0000,Seasonal naive (latest day)
+42.0000,seasonal_naive_week,1441,53.9958,68.2840,51.7978,-0.1384,Seasonal naive (week)
+42.0000,persistence,1441,56.8522,70.4006,56.2622,-0.1986,Persistence
+42.0000,no_weather_short,1441,42.1001,51.5275,44.4053,0.1124,"LightGBM, no weather, short history"
+42.0000,oracle_weather,1441,26.4209,33.5077,26.5347,0.4430,LightGBM + observed weather (leaky oracle)
+42.0000,neso_stored_forecast,1441,9.5566,13.7634,8.8902,0.7985,NESO stored forecast (short-lead nowcast)
+42.5000,weather_forecast,1441,27.9910,36.1444,27.2732,0.4143,LightGBM + weather forecast
+42.5000,no_weather,1441,41.1963,49.8497,44.6668,0.1380,"LightGBM, no weather"
+42.5000,seasonal_naive_day,1441,47.7911,61.2394,46.5543,0.0000,Seasonal naive (latest day)
+42.5000,seasonal_naive_week,1441,54.3164,68.7009,52.5555,-0.1365,Seasonal naive (week)
+42.5000,persistence,1441,55.9410,69.4239,55.6924,-0.1705,Persistence
+42.5000,no_weather_short,1441,42.1356,51.5157,44.7877,0.1183,"LightGBM, no weather, short history"
+42.5000,oracle_weather,1441,26.1847,33.0315,26.5326,0.4521,LightGBM + observed weather (leaky oracle)
+42.5000,neso_stored_forecast,1441,8.4885,12.4056,7.9884,0.8224,NESO stored forecast (short-lead nowcast)
+43.0000,weather_forecast,1441,28.0579,36.0643,27.6436,0.4168,LightGBM + weather forecast
+43.0000,no_weather,1441,41.3448,50.0853,45.4164,0.1407,"LightGBM, no weather"
+43.0000,seasonal_naive_day,1441,48.1131,61.6131,47.3552,0.0000,Seasonal naive (latest day)
+43.0000,seasonal_naive_week,1441,54.4858,69.0610,53.2493,-0.1325,Seasonal naive (week)
+43.0000,persistence,1441,55.1298,68.7926,55.5468,-0.1458,Persistence
+43.0000,no_weather_short,1441,42.3123,51.8298,45.5504,0.1206,"LightGBM, no weather, short history"
+43.0000,oracle_weather,1441,26.1903,32.8834,26.8700,0.4557,LightGBM + observed weather (leaky oracle)
+43.0000,neso_stored_forecast,1441,8.3109,11.7773,8.1100,0.8273,NESO stored forecast (short-lead nowcast)
+43.5000,weather_forecast,1441,27.9306,35.9340,27.8757,0.4193,LightGBM + weather forecast
+43.5000,no_weather,1441,41.4754,50.4563,46.2392,0.1377,"LightGBM, no weather"
+43.5000,seasonal_naive_day,1441,48.0965,61.6786,48.1150,0.0000,Seasonal naive (latest day)
+43.5000,seasonal_naive_week,1441,54.5371,69.1880,53.8025,-0.1339,Seasonal naive (week)
+43.5000,persistence,1441,54.1166,67.7785,55.3944,-0.1252,Persistence
+43.5000,no_weather_short,1441,42.3792,52.0810,46.2627,0.1189,"LightGBM, no weather, short history"
+43.5000,oracle_weather,1441,26.0366,32.6800,26.9269,0.4587,LightGBM + observed weather (leaky oracle)
+43.5000,neso_stored_forecast,1441,8.6898,13.8340,8.1966,0.8193,NESO stored forecast (short-lead nowcast)
+44.0000,weather_forecast,1441,27.8838,36.0245,28.1779,0.4207,LightGBM + weather forecast
+44.0000,no_weather,1441,41.8803,50.8134,47.2962,0.1299,"LightGBM, no weather"
+44.0000,seasonal_naive_day,1441,48.1305,61.6817,48.6844,0.0000,Seasonal naive (latest day)
+44.0000,seasonal_naive_week,1441,54.7120,69.4589,54.5578,-0.1367,Seasonal naive (week)
+44.0000,persistence,1441,52.6842,66.3921,54.2836,-0.0946,Persistence
+44.0000,no_weather_short,1441,42.7727,52.4411,47.3251,0.1113,"LightGBM, no weather, short history"
+44.0000,oracle_weather,1441,25.8471,32.5640,26.9619,0.4630,LightGBM + observed weather (leaky oracle)
+44.0000,neso_stored_forecast,1441,8.7953,11.8898,8.6948,0.8173,NESO stored forecast (short-lead nowcast)
+44.5000,weather_forecast,1441,28.0246,36.1790,28.3171,0.4153,LightGBM + weather forecast
+44.5000,no_weather,1441,42.1535,51.1889,47.7728,0.1205,"LightGBM, no weather"
+44.5000,seasonal_naive_day,1441,47.9264,61.5506,48.6971,0.0000,Seasonal naive (latest day)
+44.5000,seasonal_naive_week,1441,54.9917,69.7457,55.0685,-0.1474,Seasonal naive (week)
+44.5000,persistence,1441,51.2346,64.9673,52.7719,-0.0690,Persistence
+44.5000,no_weather_short,1441,43.2079,52.7939,47.9009,0.0985,"LightGBM, no weather, short history"
+44.5000,oracle_weather,1441,26.1108,32.8893,27.3272,0.4552,LightGBM + observed weather (leaky oracle)
+44.5000,neso_stored_forecast,1441,9.9084,14.6235,9.6295,0.7933,NESO stored forecast (short-lead nowcast)
+45.0000,weather_forecast,1441,28.1543,36.2414,28.4016,0.4134,LightGBM + weather forecast
+45.0000,no_weather,1441,42.4980,51.3414,48.5296,0.1146,"LightGBM, no weather"
+45.0000,seasonal_naive_day,1441,47.9972,61.4979,49.1069,0.0000,Seasonal naive (latest day)
+45.0000,seasonal_naive_week,1441,55.2075,69.7100,55.6326,-0.1502,Seasonal naive (week)
+45.0000,persistence,1441,49.6336,63.3582,51.1339,-0.0341,Persistence
+45.0000,no_weather_short,1441,43.5643,53.0175,48.5500,0.0924,"LightGBM, no weather, short history"
+45.0000,oracle_weather,1441,25.8005,32.8422,26.9745,0.4625,LightGBM + observed weather (leaky oracle)
+45.0000,neso_stored_forecast,1441,10.2457,14.0526,10.1369,0.7865,NESO stored forecast (short-lead nowcast)
+45.5000,weather_forecast,1441,28.3640,36.5987,28.3408,0.4077,LightGBM + weather forecast
+45.5000,no_weather,1441,42.3215,51.1530,47.8182,0.1162,"LightGBM, no weather"
+45.5000,seasonal_naive_day,1441,47.8876,61.3400,48.5541,0.0000,Seasonal naive (latest day)
+45.5000,seasonal_naive_week,1441,55.0423,69.4242,54.9983,-0.1494,Seasonal naive (week)
+45.5000,persistence,1441,48.3067,61.9986,49.1483,-0.0088,Persistence
+45.5000,no_weather_short,1441,43.5837,53.0245,47.9402,0.0899,"LightGBM, no weather, short history"
+45.5000,oracle_weather,1441,26.0931,33.2346,26.9238,0.4551,LightGBM + observed weather (leaky oracle)
+45.5000,neso_stored_forecast,1441,10.8668,15.3390,10.4090,0.7731,NESO stored forecast (short-lead nowcast)
+46.0000,weather_forecast,1441,28.1634,36.4574,28.2862,0.4092,LightGBM + weather forecast
+46.0000,no_weather,1441,42.0134,50.8250,47.4631,0.1187,"LightGBM, no weather"
+46.0000,seasonal_naive_day,1441,47.6704,61.0298,48.2881,0.0000,Seasonal naive (latest day)
+46.0000,seasonal_naive_week,1441,54.7044,68.9982,54.8300,-0.1476,Seasonal naive (week)
+46.0000,persistence,1441,47.6135,61.2312,48.4236,0.0012,Persistence
+46.0000,no_weather_short,1441,43.1380,52.5756,47.5551,0.0951,"LightGBM, no weather, short history"
+46.0000,oracle_weather,1441,26.0782,33.3664,26.8313,0.4529,LightGBM + observed weather (leaky oracle)
+46.0000,neso_stored_forecast,1441,11.2207,15.8377,10.7394,0.7646,NESO stored forecast (short-lead nowcast)
+46.5000,weather_forecast,1441,28.2535,36.3812,28.1540,0.4035,LightGBM + weather forecast
+46.5000,no_weather,1441,41.7481,50.3981,46.7312,0.1186,"LightGBM, no weather"
+46.5000,seasonal_naive_day,1441,47.3657,60.9621,47.6401,0.0000,Seasonal naive (latest day)
+46.5000,seasonal_naive_week,1441,54.2804,68.6518,53.9574,-0.1460,Seasonal naive (week)
+46.5000,persistence,1441,47.3657,60.9621,47.6401,0.0000,Persistence
+46.5000,no_weather_short,1441,42.7110,52.0414,46.7311,0.0983,"LightGBM, no weather, short history"
+46.5000,oracle_weather,1441,26.1006,33.1784,26.5306,0.4490,LightGBM + observed weather (leaky oracle)
+46.5000,neso_stored_forecast,1441,10.9695,16.1671,10.2586,0.7684,NESO stored forecast (short-lead nowcast)
+47.0000,weather_forecast,1438,29.0692,37.6051,28.5348,0.4380,LightGBM + weather forecast
+47.0000,no_weather,1438,41.6892,50.1096,45.7065,0.1940,"LightGBM, no weather"
+47.0000,seasonal_naive_day,1438,51.7267,65.5280,51.3948,0.0000,Seasonal naive (latest day)
+47.0000,seasonal_naive_week,1438,53.9451,68.3751,52.9607,-0.0429,Seasonal naive (week)
+47.0000,persistence,1438,47.5779,61.1753,47.0867,0.0802,Persistence
+47.0000,no_weather_short,1438,42.8282,51.9399,46.1497,0.1720,"LightGBM, no weather, short history"
+47.0000,oracle_weather,1438,26.7720,33.7841,27.0868,0.4824,LightGBM + observed weather (leaky oracle)
+47.0000,neso_stored_forecast,1438,10.7629,14.8615,10.2867,0.7919,NESO stored forecast (short-lead nowcast)
+47.5000,weather_forecast,1441,28.8151,37.4198,28.1220,0.4454,LightGBM + weather forecast
+47.5000,no_weather,1441,41.4626,49.9287,44.9443,0.2020,"LightGBM, no weather"
+47.5000,seasonal_naive_day,1441,51.9584,65.8295,51.1035,0.0000,Seasonal naive (latest day)
+47.5000,seasonal_naive_week,1441,54.0527,68.4238,52.5258,-0.0403,Seasonal naive (week)
+47.5000,persistence,1441,48.2082,61.7677,46.9035,0.0722,Persistence
+47.5000,no_weather_short,1441,42.8164,52.1010,45.8747,0.1759,"LightGBM, no weather, short history"
+47.5000,oracle_weather,1441,26.7678,33.7798,27.0742,0.4848,LightGBM + observed weather (leaky oracle)
+47.5000,neso_stored_forecast,1441,10.1825,14.2071,9.5440,0.8040,NESO stored forecast (short-lead nowcast)
+48.0000,weather_forecast,1440,28.6798,37.2294,27.4698,0.4482,LightGBM + weather forecast
+48.0000,no_weather,1440,41.1567,49.6969,43.8733,0.2082,"LightGBM, no weather"
+48.0000,seasonal_naive_day,1440,51.9785,65.8657,50.4590,0.0000,Seasonal naive (latest day)
+48.0000,seasonal_naive_week,1440,53.9861,68.2842,51.7892,-0.0386,Seasonal naive (week)
+48.0000,persistence,1440,48.8868,62.5194,46.6899,0.0595,Persistence
+48.0000,no_weather_short,1440,42.6468,51.8157,44.8938,0.1795,"LightGBM, no weather, short history"
+48.0000,oracle_weather,1440,26.6435,33.8141,26.6525,0.4874,LightGBM + observed weather (leaky oracle)
+48.0000,neso_stored_forecast,1440,9.5618,13.7680,8.8951,0.8160,NESO stored forecast (short-lead nowcast)
