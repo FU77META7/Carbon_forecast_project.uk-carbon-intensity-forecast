@@ -1,6 +1,6 @@
 # Backtest results
 
-Generated 2026-09-28 14:52 UTC by `python -m carbon_forecast.evaluate` from the `backtest_results` table written by `python -m carbon_forecast.backtest`. Every number below comes from that run.
+Generated 2026-09-28 15:12 UTC by `python -m carbon_forecast.evaluate` from the `backtest_results` table written by `python -m carbon_forecast.backtest`. Every number below comes from that run.
 
 ## Set-up
 
@@ -26,6 +26,22 @@ Generated 2026-09-28 14:52 UTC by `python -m carbon_forecast.evaluate` from the 
 | NESO stored forecast (short-lead nowcast) | 70,668 | 9.831 | 14.126 | 9.400 | 0.795 |
 
 The deployable weather-forecast model has MAE 27.2 gCO2/kWh (skill 0.43); without weather, MAE 41.5 (skill 0.14). Month by month, the weather-forecast model beats the seasonal naive baseline in 12 of 12 folds and the no-weather model in 11 of 12.
+
+## Is the NESO comparison like-for-like?
+
+The Carbon Intensity API keeps one stored forecast per half-hour, and its lead time is not documented. Its error next to persistence at increasing lags, on the same half-hours of the test period:
+
+| predictor | mae | n |
+|---|---|---|
+| NESO stored forecast | 9.84 | 17,369 |
+| Persistence (30 min lag) | 4.93 | 17,369 |
+| Persistence (1 h lag) | 8.97 | 17,369 |
+| Persistence (2 h lag) | 16.40 | 17,369 |
+| Persistence (6 h lag) | 37.21 | 17,369 |
+| Persistence (24 h lag) | 39.85 | 17,369 |
+| Persistence (48 h lag) | 47.84 | 17,369 |
+
+The stored NESO forecast (MAE 9.8) is worse than persistence (1 h lag) but better than persistence (2 h lag). A forecast issued 24-48 hours ahead could not match persistence at such short lags: the lowest MAE of any 24-48h model at any horizon in this backtest is 25.3. The stored value is therefore a short-lead nowcast, and comparing it with the 24-48h models is not like-for-like.
 
 ## By horizon
 
