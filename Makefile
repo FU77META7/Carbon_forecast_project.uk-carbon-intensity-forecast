@@ -47,7 +47,7 @@ lint:
 	uv run ruff check .
 	uv run ruff format --check .
 
-# Full rebuild from the public APIs (roughly 15-20 minutes, mostly polite API pacing).
+# Full rebuild from the public APIs (about 20 minutes, mostly polite API pacing).
 all: setup ingest features tune backtest evaluate
 
 # Deletes the local database; `make all` rebuilds it.
