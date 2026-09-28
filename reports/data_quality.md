@@ -1,6 +1,6 @@
 # Data quality report
 
-Generated 2026-09-28 14:14 UTC by `python -m carbon_forecast.quality`. All timestamps are UTC.
+Generated 2026-09-28 15:31 UTC by `python -m carbon_forecast.quality`. All timestamps are UTC.
 Expected slots run from the configured start of each series to its latest stored timestamp, on a 30-minute (Carbon Intensity) or hourly (weather) grid.
 
 ## Coverage, gaps, duplicates and nulls
