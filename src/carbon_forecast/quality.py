@@ -294,6 +294,31 @@ def build_report(con: duckdb.DuckDBPyConnection, settings: dict) -> str:
         "",
     ]
 
+    # A national average cannot exceed the dirtiest fuel's emission factor
+    # (coal, roughly 900-1,000 gCO2/kWh), and GB has never had a zero-carbon
+    # half-hour, so both are data errors. Staging nulls them out.
+    suspect = con.execute(
+        """
+        SELECT period_start_utc, forecast_gco2, actual_gco2,
+               concat_ws(', ',
+                   CASE WHEN forecast_gco2 > 1000 THEN 'forecast > 1000' END,
+                   CASE WHEN actual_gco2 > 1000 THEN 'actual > 1000' END,
+                   CASE WHEN forecast_gco2 = 0 THEN 'forecast = 0' END,
+                   CASE WHEN actual_gco2 = 0 THEN 'actual = 0' END) AS reason
+        FROM raw_intensity
+        WHERE period_start_utc >= $start
+          AND (forecast_gco2 > 1000 OR actual_gco2 > 1000
+               OR forecast_gco2 = 0 OR actual_gco2 = 0)
+        ORDER BY period_start_utc""",
+        {"start": start},
+    ).fetchall()
+    out += [f"Suspect intensity values (> 1,000 or exactly 0): {len(suspect):,}", ""]
+    if suspect:
+        out += [
+            _table(["period start", "forecast", "actual", "reason"], [list(r) for r in suspect]),
+            "",
+        ]
+
     fuels = con.execute(
         """
         SELECT fuel, count(*) FROM raw_generation WHERE period_start_utc >= $start
@@ -303,7 +328,7 @@ def build_report(con: duckdb.DuckDBPyConnection, settings: dict) -> str:
     g = con.execute(
         """
         WITH p AS (
-            SELECT period_start_utc, count(*) AS n_fuels, sum(perc) AS total
+            SELECT period_start_utc, count(*) AS n_fuels, round(sum(perc), 1) AS total
             FROM raw_generation WHERE period_start_utc >= $start GROUP BY period_start_utc
         )
         SELECT min(n_fuels), max(n_fuels), min(total), max(total),
@@ -323,7 +348,7 @@ def build_report(con: duckdb.DuckDBPyConnection, settings: dict) -> str:
 
     same = [f"avg(CASE WHEN a.{v} = f.{v} THEN 100.0 ELSE 0.0 END)" for v in VARIABLES]
     w = con.execute(f"""
-        SELECT year(a.time_utc) AS yr, count(*) AS n, {", ".join(same)},
+        SELECT CAST(year(a.time_utc) AS VARCHAR) AS yr, count(*) AS n, {", ".join(same)},
                avg(abs(a.wind_speed_100m - f.wind_speed_100m)) AS wind_mae
         FROM raw_weather_archive a
         JOIN raw_weather_hist_forecast f USING (location_id, time_utc)

@@ -12,6 +12,10 @@ def test_report_flags_gaps_and_dst_days(con):
                                             INTERVAL 30 MINUTE)) AS ts)
         WHERE ts NOT BETWEEN TIMESTAMP '2019-10-29 10:00' AND TIMESTAMP '2019-10-29 11:00'
     """)
+    con.execute(
+        "UPDATE raw_intensity SET forecast_gco2 = 9899 "
+        "WHERE period_start_utc = TIMESTAMP '2019-10-26 12:00'"
+    )
     settings = load_settings()
     settings["start_date"] = date(2019, 10, 25)
     report = build_report(con, settings)
@@ -22,3 +26,5 @@ def test_report_flags_gaps_and_dst_days(con):
     # The day with the hole is the only calendar mismatch.
     assert "Days whose period count differs from the calendar: 1" in report
     assert "| 2019-10-29 | 45 | 48 |" in report
+    assert "Suspect intensity values (> 1,000 or exactly 0): 1" in report
+    assert "| 2019-10-26 12:00:00 | 9,899 | 140 | forecast > 1000 |" in report
