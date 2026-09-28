@@ -204,8 +204,14 @@ def wide(long: pd.DataFrame, col: str, metric: str, models: list[str]) -> pd.Dat
     return w.reset_index()
 
 
-def coverage_table(common: pd.DataFrame) -> pd.DataFrame:
-    lo, hi, y = common["weather_forecast_p10"], common["weather_forecast_p90"], common[TARGET]
+INTERVALS = {"raw quantile": "p", "conformal (CQR)": "cp"}
+
+
+def coverage_table(common: pd.DataFrame, kind: str = "p") -> pd.DataFrame:
+    """Coverage of the weather-forecast 10-90% band; kind "p" = raw quantile
+    models, "cp" = conformalized."""
+    lo, hi = common[f"weather_forecast_{kind}10"], common[f"weather_forecast_{kind}90"]
+    y = common[TARGET]
     buckets = pd.cut(
         common["horizon_h"],
         [24, 30, 36, 42, 48.01],
@@ -273,12 +279,12 @@ def fig_sample_week(week: pd.DataFrame, path):
     t = week["target_time_utc"]
     ax.fill_between(
         t,
-        week["weather_forecast_p10"],
-        week["weather_forecast_p90"],
+        week["weather_forecast_cp10"],
+        week["weather_forecast_cp90"],
         color=MODELS["weather_forecast"][1],
         alpha=0.12,
         linewidth=0,
-        label="LightGBM + weather forecast, 10-90% interval",
+        label="LightGBM + weather forecast, 10-90% interval (conformal)",
     )
     ax.plot(t, week[TARGET], color=INK, linewidth=2, label="Actual")
     for mdl in ("weather_forecast", "no_weather", "seasonal_naive_day"):
@@ -390,7 +396,7 @@ def build(con, settings) -> str:
     df, (wind_lo, wind_hi) = add_context(df)
     all_models = [m for m in MODELS if m in df.columns]
     fair = [m for m in all_models if m != "neso_stored_forecast"]
-    interval_cols = ["weather_forecast_p10", "weather_forecast_p90"]
+    interval_cols = [f"weather_forecast_{k}{q}" for k in INTERVALS.values() for q in (10, 90)]
     common = df.dropna(subset=[TARGET, *all_models, *interval_cols, "wind_regime"])
 
     # Tables
@@ -400,7 +406,31 @@ def build(con, settings) -> str:
     season = by_group(common, "season", fair, SEASON_ORDER)
     tod = by_group(common, "time_of_day", fair, TOD_ORDER)
     wind = by_group(common, "wind_regime", fair, WIND_ORDER)
-    cov = coverage_table(common)
+    cov = pd.concat(
+        [coverage_table(common, k).assign(interval=name) for name, k in INTERVALS.items()]
+    )
+    cov = cov[["interval", *[c for c in cov.columns if c != "interval"]]]
+    calib = con.execute("SELECT * FROM backtest_interval_calibration ORDER BY 1").df()
+    fold_cov = []
+    for fold, g in common.groupby("fold_start_utc"):
+        y = g[TARGET]
+        row = {"fold_start_utc": fold}
+        for k in INTERVALS.values():
+            inside = (y >= g[f"weather_forecast_{k}10"]) & (y <= g[f"weather_forecast_{k}90"])
+            row[f"test_coverage_%_{k}"] = 100 * inside.mean()
+        fold_cov.append(row)
+    calib = calib.merge(pd.DataFrame(fold_cov), on="fold_start_utc")
+    calib_tab = pd.DataFrame(
+        {
+            "fold": calib["fold_start_utc"].dt.strftime("%Y-%m"),
+            "calibration_window": calib["calibration_start_utc"].dt.strftime("%Y-%m"),
+            "n_calibration": calib["n_calibration"],
+            "calibration_raw_coverage_%": 100 * calib["calibration_raw_coverage"],
+            "adjustment_gco2": calib["conformal_adjustment"],
+            "test_coverage_raw_%": calib["test_coverage_%_p"],
+            "test_coverage_conformal_%": calib["test_coverage_%_cp"],
+        }
+    )
     week = pick_sample_week(df.dropna(subset=[TARGET, "weather_forecast", *interval_cols]))
 
     h.assign(model_label=h["model"].map(lambda m: MODELS[m][0])).to_csv(
@@ -544,10 +574,20 @@ def build(con, settings) -> str:
         "",
         "## Prediction intervals (weather-forecast model)",
         "",
-        "Quantile LightGBM at the 10th and 90th percentiles, same features and settings as the "
-        "point model. A well-calibrated 10-90% interval covers 80% of actuals.",
+        "A well-calibrated 10-90% interval covers 80% of actuals. **Raw quantile**: LightGBM "
+        "at the 10th and 90th percentiles, same features and settings as the point model, "
+        "trained on targets up to one month before each fold. **Conformal (CQR)**: the raw band "
+        "widened on both sides by the conformity-score quantile measured on that held-out "
+        "month (Romano et al., 2019), which lies strictly before the fold, so no test data is "
+        "used. CQR's coverage guarantee assumes exchangeable data; time series are not, so "
+        "coverage here is measured, not guaranteed.",
         "",
         df_to_markdown(cov, ".1f"),
+        "",
+        "Per fold: calibration window, the adjustment it produced, and the coverage achieved "
+        "on the fold's test month.",
+        "",
+        df_to_markdown(calib_tab, ".1f"),
         "",
         "## Feature attribution (weather-forecast model, final fold)",
         "",

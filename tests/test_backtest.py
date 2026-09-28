@@ -12,7 +12,7 @@ from tests.test_models import _frame
 
 PARAMS = {"objective": "regression", "learning_rate": 0.1, "num_leaves": 7, "min_data_in_leaf": 20}
 SETTINGS = {
-    "evaluation": {"test_start": date(2024, 3, 1)},
+    "evaluation": {"test_start": date(2024, 3, 1), "interval_alpha": 0.2, "calibration_months": 1},
     "model": {
         "seed": 1,
         "variants": {
@@ -51,7 +51,7 @@ def test_every_fold_trains_only_on_the_past(monkeypatch):
         return real_fit(self, train, *a, **k)
 
     monkeypatch.setattr(LGBMForecaster, "fit", spy)
-    results, importance = backtest.run_backtest(df, SETTINGS, TUNED)
+    results, importance, calibration = backtest.run_backtest(df, SETTINGS, TUNED)
 
     folds = sorted(results["fold_start_utc"].unique())
     assert [pd.Timestamp(f) for f in folds] == [
@@ -67,6 +67,11 @@ def test_every_fold_trains_only_on_the_past(monkeypatch):
     # the weather model honours its later train_start
     wf_fits = [s for s in seen if "alpha" not in s[2]][1::3]
     assert all(min_origin >= pd.Timestamp("2024-01-15") for min_origin, _, _ in wf_fits)
+    # quantile models never see the calibration month (the month before the fold)
+    q_fits = [(s, f) for s, f in zip(seen, fold_of_fit, strict=True) if "alpha" in s[2]]
+    assert len(q_fits) == 4
+    for (_, max_target, _), fold in q_fits:
+        assert max_target < pd.Timestamp(fold) - pd.DateOffset(months=1)
 
     test_rows = df[df["origin_time_utc"] >= datetime(2024, 3, 1)]
     assert len(results) == len(test_rows)
@@ -76,11 +81,22 @@ def test_every_fold_trains_only_on_the_past(monkeypatch):
         "oracle_weather",
         "weather_forecast_p10",
         "weather_forecast_p90",
+        "weather_forecast_cp10",
+        "weather_forecast_cp90",
         "persistence",
     ):
         assert results[col].notna().all(), col
     assert (results["weather_forecast_p10"] <= results["weather_forecast_p90"]).all()
     assert set(importance["model"]) == {"weather_forecast", "no_weather"}
+    # conformal band = raw band shifted outward (or inward) by that fold's adjustment
+    assert len(calibration) == 2
+    for _, c in calibration.iterrows():
+        rows = results[results["fold_start_utc"] == c["fold_start_utc"]]
+        q = c["conformal_adjustment"]
+        assert np.allclose(rows["weather_forecast_cp10"], rows["weather_forecast_p10"] - q)
+        assert np.allclose(rows["weather_forecast_cp90"], rows["weather_forecast_p90"] + q)
+        assert c["calibration_start_utc"] == c["fold_start_utc"] - pd.DateOffset(months=1)
+        assert c["n_calibration"] > 0
 
 
 def test_wind_terciles_and_seasons():

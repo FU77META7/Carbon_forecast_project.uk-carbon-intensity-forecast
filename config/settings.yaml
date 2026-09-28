@@ -65,6 +65,12 @@ evaluation:
   # sees the test period. Training rows are purged so no training target
   # falls at or after the validation start.
   validation_months: 6
+  # Prediction intervals: quantile LightGBM at 10% / 90%, then conformalized
+  # (CQR). Each fold's quantile models are trained on targets up to this many
+  # months before the fold; their errors on that held-out window set a
+  # symmetric widening that targets 80% coverage.
+  interval_alpha: 0.2
+  calibration_months: 1
 
 model:
   seed: 42

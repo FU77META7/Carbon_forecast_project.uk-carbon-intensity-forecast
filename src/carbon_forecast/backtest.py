@@ -7,7 +7,8 @@ train every model variant on all rows whose TARGET is before the month starts
 (expanding window, purged at the boundary), then forecast every origin in the
 month. Hyperparameters are the ones tuned on the earlier validation block and
 stay fixed. Results land in DuckDB (`backtest_results`,
-`backtest_feature_importance`) for the evaluation report and the app.
+`backtest_feature_importance`, `backtest_interval_calibration`) for the
+evaluation report and the app.
 """
 
 import argparse
@@ -23,12 +24,14 @@ from carbon_forecast.config import load_settings, resolve
 from carbon_forecast.dataset import KEYS, TARGET, feature_columns, load_training_set
 from carbon_forecast.db import connect
 from carbon_forecast.models.baselines import predict_baselines
+from carbon_forecast.models.conformal import calibrate
 from carbon_forecast.models.lgbm import LGBMForecaster, load_tuned, quantile_params, variant_spec
 from carbon_forecast.models.tune import month_offset
 
 log = logging.getLogger(__name__)
 
-# Prediction intervals (10th-90th percentile) for the deployable weather model.
+# Prediction intervals (10th-90th percentile) for the deployable weather model:
+# raw quantile LightGBM (p10/p90) and conformalized (cp10/cp90).
 INTERVAL_VARIANTS = ("weather_forecast",)
 QUANTILES = {"p10": 0.1, "p90": 0.9}
 # Feature attributions are computed for the final fold's models.
@@ -52,7 +55,7 @@ def run_backtest(
     test_all = df[df["origin_time_utc"] >= test_start]
     results = pd.concat([test_all[KEYS + [TARGET]], predict_baselines(test_all)], axis=1)
     results["fold_start_utc"] = pd.NaT
-    importances = []
+    importances, calibration = [], []
 
     for fold_start, fold_end in zip(bounds, bounds[1:], strict=False):
         in_fold = (df["origin_time_utc"] >= fold_start) & (df["origin_time_utc"] < fold_end)
@@ -75,14 +78,9 @@ def run_backtest(
             ).fit(train)
             results.loc[test.index, variant] = model.predict(test)
             if variant in INTERVAL_VARIANTS:
-                for name, alpha in QUANTILES.items():
-                    q = LGBMForecaster(
-                        feats,
-                        quantile_params(spec["params"], alpha),
-                        spec["num_boost_round"],
-                        seed=m["seed"],
-                    ).fit(train)
-                    results.loc[test.index, f"{variant}_{name}"] = q.predict(test)
+                calibration.append(
+                    _intervals(df, results, test, train, feats, spec, variant, fold_start, settings)
+                )
             if variant in IMPORTANCE_VARIANTS and fold_end == bounds[-1]:
                 importances.append(_importance(model, test, variant, fold_start))
             log.info(
@@ -94,12 +92,44 @@ def run_backtest(
                 time.time() - t0,
             )
 
-    # A p10 above the p90 (quantile crossing) is repaired by sorting the pair.
-    for v in INTERVAL_VARIANTS:
-        lo, hi = results[f"{v}_p10"], results[f"{v}_p90"]
-        log.info("%s: p10 > p90 in %d of %d rows before repair", v, int((lo > hi).sum()), len(lo))
-        results[f"{v}_p10"], results[f"{v}_p90"] = np.minimum(lo, hi), np.maximum(lo, hi)
-    return results, pd.concat(importances, ignore_index=True)
+    return results, pd.concat(importances, ignore_index=True), pd.DataFrame(calibration)
+
+
+def _sorted_band(lo: np.ndarray, hi: np.ndarray) -> tuple[np.ndarray, np.ndarray, int]:
+    """Repair quantile crossing (p10 > p90) by sorting the pair; returns the count."""
+    return np.minimum(lo, hi), np.maximum(lo, hi), int((lo > hi).sum())
+
+
+def _intervals(df, results, test, train, feats, spec, variant, fold_start, settings) -> dict:
+    """Quantile models trained on targets before the calibration window, scored on
+    that window (strictly before the fold), then conformalized for the fold."""
+    ev, seed = settings["evaluation"], settings["model"]["seed"]
+    cal_start = month_offset(fold_start, -ev["calibration_months"])
+    q_train = train[train["target_time_utc"] < cal_start]
+    cal = train[train["origin_time_utc"] >= cal_start]  # targets already < fold_start
+    band = {}
+    for name, alpha in QUANTILES.items():
+        q = LGBMForecaster(
+            feats, quantile_params(spec["params"], alpha), spec["num_boost_round"], seed=seed
+        ).fit(q_train)
+        band[name] = (q.predict(cal), q.predict(test))
+    lo_cal, hi_cal, _ = _sorted_band(band["p10"][0], band["p90"][0])
+    lo, hi, crossed = _sorted_band(band["p10"][1], band["p90"][1])
+    qhat = calibrate(cal[TARGET].to_numpy(), lo_cal, hi_cal, ev["interval_alpha"])
+    results.loc[test.index, f"{variant}_p10"] = lo
+    results.loc[test.index, f"{variant}_p90"] = hi
+    results.loc[test.index, f"{variant}_cp10"] = lo - qhat
+    results.loc[test.index, f"{variant}_cp90"] = hi + qhat
+    y_cal = cal[TARGET].to_numpy()
+    return {
+        "fold_start_utc": fold_start,
+        "model": variant,
+        "calibration_start_utc": cal_start,
+        "n_calibration": len(cal),
+        "calibration_raw_coverage": float(np.mean((y_cal >= lo_cal) & (y_cal <= hi_cal))),
+        "conformal_adjustment": qhat,
+        "test_rows_crossed": crossed,
+    }
 
 
 def _importance(model: LGBMForecaster, test: pd.DataFrame, variant: str, fold: datetime):
@@ -119,10 +149,20 @@ def _importance(model: LGBMForecaster, test: pd.DataFrame, variant: str, fold: d
     )
 
 
-def save(con: duckdb.DuckDBPyConnection, results: pd.DataFrame, importance: pd.DataFrame):
+def save(
+    con: duckdb.DuckDBPyConnection,
+    results: pd.DataFrame,
+    importance: pd.DataFrame,
+    calibration: pd.DataFrame,
+):
     """Store results with the context the error breakdowns need."""
     con.register("results_df", results)
     con.register("importance_df", importance)
+    con.register("calibration_df", calibration)
+    con.execute(
+        "CREATE OR REPLACE TABLE backtest_interval_calibration AS SELECT * FROM calibration_df"
+    )
+    con.unregister("calibration_df")
     con.execute("""
         CREATE OR REPLACE TABLE backtest_results AS
         SELECT r.*,
@@ -152,11 +192,12 @@ def main(argv: list[str] | None = None) -> None:
     with connect(resolve(args.db)) as con:
         df = load_training_set(con)
         log.info("loaded %d labelled rows", len(df))
-        results, importance = run_backtest(df, settings, tuned)
-        save(con, results, importance)
+        results, importance, calibration = run_backtest(df, settings, tuned)
+        save(con, results, importance, calibration)
         n = con.execute("SELECT count(*), count(DISTINCT fold_start_utc) FROM backtest_results")
         rows, folds = n.fetchone()
     log.info("backtest_results: %d rows over %d monthly folds", rows, folds)
+    log.info("quantile crossings repaired in %d test rows", calibration["test_rows_crossed"].sum())
 
 
 if __name__ == "__main__":
