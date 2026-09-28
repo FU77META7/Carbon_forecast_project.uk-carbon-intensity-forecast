@@ -31,6 +31,33 @@ open_meteo:
   # calls against a 600/minute budget; a 3 s gap keeps us far below it.
   min_interval_s: 3.0
 
+features:
+  # Forecast origins: every 6 hours. Several origin times per day stop the
+  # model from confusing "horizon" with "time of day of the target".
+  origin_hours_utc: [0, 6, 12, 18]
+  # Direct multi-horizon: every half-hour from 24h to 48h ahead (49 horizons).
+  horizon_min_h: 24
+  horizon_max_h: 48
+  # A half-hour's actual intensity and generation mix are assumed usable only
+  # this long after the period ends. On 2026-09-28 the API published actuals
+  # within ~20 min; 60 min is a conservative margin. At origin O the newest
+  # usable period is the one ending at O - 60 min.
+  data_availability_lag_minutes: 60
+  # A previous-runs value "predicted N*24h before valid time" is treated as
+  # usable only this many hours after that point, to cover model run time and
+  # data dissemination. A half-hour's weather uses the next hourly value too,
+  # so the lead day is chosen from that later hour: day 2 up to h = 39.5h and
+  # day 3 beyond. We never use a forecast that could not have existed at the origin.
+  weather_forecast_availability_hours: 8
+  # Intensity values above this (no GB fuel emits more; coal is ~900-1,000
+  # gCO2/kWh) or exactly zero are treated as data errors and set to null.
+  suspect_max_gco2: 1000
+  # Simple wind-power proxy at 100 m: 0 below cut-in, cubic to rated, 1 up to
+  # cut-out, 0 above (turbines shut down in storms).
+  wind_cut_in_ms: 3.0
+  wind_rated_ms: 12.0
+  wind_cut_out_ms: 25.0
+
 # Weather sites. GB carbon intensity is driven mainly by how much gas is needed
 # to fill the gap left by wind and solar, and by demand, so the sites are
 # chosen to cover the largest wind and solar fleets plus the main demand centre:
