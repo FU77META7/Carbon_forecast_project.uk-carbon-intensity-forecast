@@ -1,4 +1,4 @@
-.PHONY: setup ingest quality features tune backtest evaluate test lint all
+.PHONY: setup ingest quality features tune backtest evaluate app test lint all
 
 setup:
 	uv sync
@@ -25,6 +25,10 @@ backtest:
 
 evaluate:
 	uv run python -m carbon_forecast.evaluate
+
+# Reads precomputed backtest tables from DuckDB; never trains.
+app:
+	uv run --group app streamlit run app/streamlit_app.py
 
 test:
 	uv run pytest -q
