@@ -1,0 +1,75 @@
+# Central configuration. Paths are relative to the repo root.
+
+db_path: data/carbon.duckdb
+
+# First UTC date to ingest. The end date defaults to yesterday (UTC), the most
+# recent complete day; override both on the CLI with --start / --end.
+start_date: 2019-01-01
+
+carbon_intensity:
+  base_url: https://api.carbonintensity.org.uk
+  # The docs state a 14-day maximum for /intensity/{from}/{to}, but the live API
+  # accepts up to 31 days and rejects anything longer with HTTP 400 (verified
+  # 2026-09-28). /generation/{from}/{to} has no documented limit; we use the
+  # same chunk size for both to stay well inside what we have observed working.
+  max_days_per_request: 30
+  min_interval_s: 0.5
+
+open_meteo:
+  archive_url: https://archive-api.open-meteo.com/v1/archive
+  hist_forecast_url: https://historical-forecast-api.open-meteo.com/v1/forecast
+  prev_runs_url: https://previous-runs-api.open-meteo.com/v1/forecast
+  # Previous-runs API: `<var>_previous_dayN` is the value predicted N*24h before
+  # the valid time. Pinning one model keeps the series reproducible;
+  # ecmwf_ifs025 has complete lead-day 1-3 coverage from 2024-03-09 (verified
+  # by probing the API on 2026-09-28).
+  prev_runs_model: ecmwf_ifs025
+  prev_runs_start_date: 2024-03-09
+  prev_runs_lead_days: [1, 2, 3]
+  max_days_per_request: 366
+  # Open-Meteo's free tier weights long multi-variable requests as several
+  # calls against a 600/minute budget; a 3 s gap keeps us far below it.
+  min_interval_s: 3.0
+
+# Weather sites. GB carbon intensity is driven mainly by how much gas is needed
+# to fill the gap left by wind and solar, and by demand, so the sites are
+# chosen to cover the largest wind and solar fleets plus the main demand centre:
+#   * Offshore wind is concentrated in the southern North Sea (Hornsea, Dogger
+#     Bank, East Anglia) and the Moray Firth; the two are ~500 km apart and
+#     often sit under different weather systems.
+#   * Onshore wind is dominated by Scotland; Whitelee is the UK's largest
+#     onshore farm and a proxy for the Central Belt / Southern Uplands fleet.
+#   * Solar capacity is concentrated in southern England, especially the
+#     South West and East Anglia.
+#   * London temperature proxies heating/cooling-driven demand.
+locations:
+  - id: hornsea
+    name: Hornsea offshore wind zone
+    role: wind
+    latitude: 53.885
+    longitude: 1.791
+  - id: moray_firth
+    name: Moray Firth offshore wind (Beatrice / Moray East)
+    role: wind
+    latitude: 58.250
+    longitude: -2.870
+  - id: whitelee
+    name: Whitelee onshore wind farm
+    role: wind
+    latitude: 55.680
+    longitude: -4.250
+  - id: somerset
+    name: Somerset / Wiltshire solar cluster
+    role: solar
+    latitude: 51.200
+    longitude: -2.600
+  - id: east_anglia
+    name: Suffolk / Norfolk solar cluster
+    role: solar
+    latitude: 52.300
+    longitude: 0.900
+  - id: london
+    name: London demand centre
+    role: demand
+    latitude: 51.507
+    longitude: -0.128
