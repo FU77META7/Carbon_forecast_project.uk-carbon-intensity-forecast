@@ -1,7 +1,8 @@
 """Forecast accuracy metrics, backtest report and figures.
 
 python -m carbon_forecast.evaluate  -> reports/results.md, reports/figures/*.png,
-                                       DuckDB table backtest_metrics_by_horizon
+                                       DuckDB tables backtest_metrics_by_horizon and
+                                       backtest_metrics_overall (read by the app)
 """
 
 import argparse
@@ -436,9 +437,16 @@ def build(con, settings) -> str:
     h.assign(model_label=h["model"].map(lambda m: MODELS[m][0])).to_csv(
         REPORTS_DIR / "metrics_by_horizon.csv", index=False, float_format="%.4f"
     )
-    con.register("h_df", h)
-    con.execute("CREATE OR REPLACE TABLE backtest_metrics_by_horizon AS SELECT * FROM h_df")
-    con.unregister("h_df")
+    # The app reads these tables, so its numbers always match this report.
+    overall_df = tab_overall.rename(columns={"model": "model_label"}).rename_axis("model")
+    for name, frame in (
+        ("backtest_metrics_by_horizon", h),
+        ("backtest_metrics_overall", overall_df.reset_index()),
+        ("backtest_interval_coverage", cov),
+    ):
+        con.register("tmp_df", frame)
+        con.execute(f"CREATE OR REPLACE TABLE {name} AS SELECT * FROM tmp_df")
+        con.unregister("tmp_df")
 
     # Figures
     figs = REPORTS_DIR / "figures"
