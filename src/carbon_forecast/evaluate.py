@@ -9,15 +9,13 @@ import argparse
 from datetime import UTC, datetime
 
 import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
-
-from carbon_forecast.config import REPORTS_DIR, ROOT, load_settings, resolve  # noqa: E402
-from carbon_forecast.db import connect  # noqa: E402
-from carbon_forecast.reporting import df_to_markdown  # noqa: E402
+from carbon_forecast.config import REPORTS_DIR, ROOT, load_settings, resolve
+from carbon_forecast.db import connect
+from carbon_forecast.reporting import df_to_markdown
 
 TARGET = "y_actual_gco2"
 REFERENCE = "seasonal_naive_day"  # skill scores are relative to this baseline
@@ -524,6 +522,7 @@ def build(con, settings) -> str:
     # Figures
     figs = REPORTS_DIR / "figures"
     figs.mkdir(parents=True, exist_ok=True)
+    plt.switch_backend("Agg")  # files only; importers (notebook, app) keep their backend
     _style()
     fig_mae_by_horizon(h, figs / "mae_by_horizon.png")
     fig_sample_week(week, figs / "sample_week.png")
