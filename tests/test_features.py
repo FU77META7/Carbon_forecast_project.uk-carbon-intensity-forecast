@@ -316,3 +316,17 @@ def test_weather_forecast_lead_day_depends_on_horizon(built):
             {"t": target, "l": lead},
         ).fetchone()[0]
         assert wxf == pytest.approx(exp), horizon
+
+
+def test_weather_averages_have_a_fixed_summation_order():
+    """A parallel avg() sums in thread order, so its last bits vary between builds
+    and LightGBM splits can change. Every avg() in the weather join must be ordered
+    (a real build differed in ~42k feat_weather rows before this was fixed)."""
+    import re
+
+    from carbon_forecast.config import SQL_DIR
+
+    sql = re.sub(r"--[^\n]*", "", (SQL_DIR / "04_weather_join.sql").read_text())  # drop comments
+    calls = re.findall(r"avg\(([^)]*)\)", sql)
+    assert calls, "expected avg() aggregates in 04_weather_join.sql"
+    assert all("ORDER BY" in c for c in calls), calls

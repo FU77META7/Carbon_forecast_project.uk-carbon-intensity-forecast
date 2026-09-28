@@ -49,16 +49,20 @@ with_power AS (
     FROM aligned al
     JOIN raw_weather_locations l USING (location_id)
 )
+-- Averages use ORDER BY location_id: a parallel avg() adds values in whatever
+-- order threads finish, so the last bits of the result can differ between
+-- builds, and LightGBM can then pick different split points. A fixed order makes
+-- the features, and therefore the model, bit-for-bit reproducible.
 SELECT
     period_start_utc,
     lead_days,
-    avg(wind_speed_100m)     FILTER (WHERE role = 'wind')   AS wind_speed_100m_mean,
-    min(wind_speed_100m)     FILTER (WHERE role = 'wind')   AS wind_speed_100m_min,
-    max(wind_speed_100m)     FILTER (WHERE role = 'wind')   AS wind_speed_100m_max,
-    avg(wind_power_frac)     FILTER (WHERE role = 'wind')   AS wind_power_frac_mean,
-    avg(shortwave_radiation) FILTER (WHERE role = 'solar')  AS solar_radiation_mean,
-    avg(cloud_cover)         FILTER (WHERE role = 'solar')  AS solar_cloud_cover_mean,
-    avg(temperature_2m)      FILTER (WHERE role = 'demand') AS demand_temperature,
+    avg(wind_speed_100m ORDER BY location_id)     FILTER (WHERE role = 'wind')   AS wind_speed_100m_mean,
+    min(wind_speed_100m)                          FILTER (WHERE role = 'wind')   AS wind_speed_100m_min,
+    max(wind_speed_100m)                          FILTER (WHERE role = 'wind')   AS wind_speed_100m_max,
+    avg(wind_power_frac ORDER BY location_id)     FILTER (WHERE role = 'wind')   AS wind_power_frac_mean,
+    avg(shortwave_radiation ORDER BY location_id) FILTER (WHERE role = 'solar')  AS solar_radiation_mean,
+    avg(cloud_cover ORDER BY location_id)         FILTER (WHERE role = 'solar')  AS solar_cloud_cover_mean,
+    avg(temperature_2m ORDER BY location_id)      FILTER (WHERE role = 'demand') AS demand_temperature,
     count(DISTINCT location_id)                             AS n_locations
 FROM with_power
 GROUP BY period_start_utc, lead_days
