@@ -1,4 +1,4 @@
-.PHONY: setup ingest quality features test lint all
+.PHONY: setup ingest quality features tune test lint all
 
 setup:
 	uv sync
@@ -15,6 +15,10 @@ quality:
 features:
 	uv run python -m carbon_forecast.features
 
+# Time-based validation only; writes config/lgbm_params.yaml and reports/tuning.md.
+tune:
+	uv run python -m carbon_forecast.models.tune
+
 test:
 	uv run pytest -q
 
@@ -22,4 +26,4 @@ lint:
 	uv run ruff check .
 	uv run ruff format --check .
 
-all: setup ingest features
+all: setup ingest features tune
