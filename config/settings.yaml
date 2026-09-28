@@ -58,6 +58,40 @@ features:
   wind_rated_ms: 12.0
   wind_cut_out_ms: 25.0
 
+evaluation:
+  # Phase 4 backtest: origins from here to the end of the data, retrained monthly.
+  test_start: 2025-10-01
+  # Tuning validates on the months immediately before test_start and never
+  # sees the test period. Training rows are purged so no training target
+  # falls at or after the validation start.
+  validation_months: 6
+
+model:
+  seed: 42
+  n_search: 12              # random-search configurations per tuned variant
+  max_boost_rounds: 3000
+  early_stopping_rounds: 100
+  # Feature groups are column-name prefixes in training_set.
+  variants:
+    no_weather:
+      prefixes: [f_]
+      train_start: 2019-01-01
+    weather_forecast:
+      prefixes: [f_, wxf_]
+      train_start: 2024-03-09   # previous-runs weather forecasts start here
+    # Ablation: no weather, same short history as weather_forecast, to separate
+    # the value of weather forecasts from the effect of less training data.
+    no_weather_short:
+      prefixes: [f_]
+      train_start: 2024-03-09
+      params_from: no_weather
+    # LEAKY upper bound: observed weather at the target time. Not deployable.
+    oracle_weather:
+      prefixes: [f_, oracle_]
+      train_start: 2019-01-01
+      params_from: no_weather
+      leaky: true
+
 # Weather sites. GB carbon intensity is driven mainly by how much gas is needed
 # to fill the gap left by wind and solar, and by demand, so the sites are
 # chosen to cover the largest wind and solar fleets plus the main demand centre:
