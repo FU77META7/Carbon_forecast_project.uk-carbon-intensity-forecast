@@ -725,6 +725,8 @@ def readme_blocks(tab_overall, h, cov, neso, neso_sentence, folds, df, wf_months
             sk: "Skill",
         }
     )
+    # A skill score for the NESO nowcast would invite a false comparison.
+    t.loc["neso_stored_forecast", "Skill"] = np.nan
     key = ["weather_forecast", "no_weather", REFERENCE, "oracle_weather"]
     hsel = h[h["horizon_h"].isin([24, 30, 36, 42, 48]) & h["model"].isin(key)]
     results = "\n".join(
@@ -741,7 +743,10 @@ def readme_blocks(tab_overall, h, cov, neso, neso_sentence, folds, df, wf_months
             "",
             "MAE by horizon:",
             "",
-            df_to_markdown(wide(hsel, "horizon_h", "mae", key), ".1f"),
+            df_to_markdown(
+                wide(hsel, "horizon_h", "mae", key).rename(columns={"horizon_h": "Hours ahead"}),
+                ".1f",
+            ),
             "",
             f"Prediction intervals (10-90%): raw quantile LightGBM covers "
             f"{raw['coverage_%'].iloc[0]:.1f}% of actuals; after conformal calibration, "
