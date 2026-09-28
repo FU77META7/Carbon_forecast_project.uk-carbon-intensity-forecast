@@ -1,4 +1,4 @@
-.PHONY: setup ingest quality test lint all
+.PHONY: setup ingest quality features test lint all
 
 setup:
 	uv sync
@@ -11,6 +11,10 @@ ingest:
 quality:
 	uv run python -m carbon_forecast.quality
 
+# Runs sql/00-05 in order and materialises the training_set table.
+features:
+	uv run python -m carbon_forecast.features
+
 test:
 	uv run pytest -q
 
@@ -18,4 +22,4 @@ lint:
 	uv run ruff check .
 	uv run ruff format --check .
 
-all: setup ingest
+all: setup ingest features
