@@ -13,6 +13,7 @@ from carbon_forecast.config import REPORTS_DIR, load_settings, resolve
 from carbon_forecast.db import connect
 from carbon_forecast.ingest.open_meteo import VARIABLES
 from carbon_forecast.ingest.ranges import missing_ranges
+from carbon_forecast.reporting import markdown_table as _table
 
 
 @dataclass(frozen=True)
@@ -93,19 +94,6 @@ def _series(con: duckdb.DuckDBPyConnection, settings: dict) -> list[Series]:
             for loc in locations
         ]
     return out
-
-
-def _table(headers: list[str], rows: list[list]) -> str:
-    def fmt(v):
-        if isinstance(v, float):
-            return f"{v:,.2f}"
-        if isinstance(v, int):
-            return f"{v:,}"
-        return "" if v is None else str(v)
-
-    lines = ["| " + " | ".join(headers) + " |", "|" + "---|" * len(headers)]
-    lines += ["| " + " | ".join(fmt(v) for v in row) + " |" for row in rows]
-    return "\n".join(lines)
 
 
 def series_summary(con: duckdb.DuckDBPyConnection, s: Series) -> dict:
