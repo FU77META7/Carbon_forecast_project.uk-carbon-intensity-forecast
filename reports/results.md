@@ -1,6 +1,6 @@
 # Backtest results
 
-Generated 2026-09-28 14:46 UTC by `python -m carbon_forecast.evaluate` from the `backtest_results` table written by `python -m carbon_forecast.backtest`. Every number below comes from that run.
+Generated 2026-09-28 14:52 UTC by `python -m carbon_forecast.evaluate` from the `backtest_results` table written by `python -m carbon_forecast.backtest`. Every number below comes from that run.
 
 ## Set-up
 
@@ -126,15 +126,37 @@ Terciles of outturn wind share at the target time: low < 23.7%, medium 23.7-42.1
 
 ## Prediction intervals (weather-forecast model)
 
-Quantile LightGBM at the 10th and 90th percentiles, same features and settings as the point model. A well-calibrated 10-90% interval covers 80% of actuals.
+A well-calibrated 10-90% interval covers 80% of actuals. **Raw quantile**: LightGBM at the 10th and 90th percentiles, same features and settings as the point model, trained on targets up to one month before each fold. **Conformal (CQR)**: the raw band widened on both sides by the conformity-score quantile measured on that held-out month (Romano et al., 2019), which lies strictly before the fold, so no test data is used. CQR's coverage guarantee assumes exchangeable data; time series are not, so coverage here is measured, not guaranteed.
 
-| horizons | n | coverage_% | below_p10_% | above_p90_% | mean_width |
-|---|---|---|---|---|---|
-| all horizons | 70,668 | 70.1 | 15.0 | 14.9 | 81.8 |
-| 24-29.5h | 17,325 | 71.1 | 14.4 | 14.5 | 81.6 |
-| 30-35.5h | 17,313 | 70.7 | 14.6 | 14.6 | 81.8 |
-| 36-41.5h | 17,301 | 69.9 | 15.3 | 14.8 | 81.9 |
-| 42-48h | 18,729 | 68.9 | 15.5 | 15.6 | 82.1 |
+| interval | horizons | n | coverage_% | below_p10_% | above_p90_% | mean_width |
+|---|---|---|---|---|---|---|
+| raw quantile | all horizons | 70,668 | 69.8 | 15.0 | 15.2 | 81.6 |
+| raw quantile | 24-29.5h | 17,325 | 70.9 | 14.5 | 14.6 | 81.4 |
+| raw quantile | 30-35.5h | 17,313 | 70.5 | 14.7 | 14.9 | 81.6 |
+| raw quantile | 36-41.5h | 17,301 | 69.4 | 15.3 | 15.3 | 81.7 |
+| raw quantile | 42-48h | 18,729 | 68.6 | 15.4 | 16.0 | 81.8 |
+| conformal (CQR) | all horizons | 70,668 | 78.5 | 9.6 | 11.9 | 94.7 |
+| conformal (CQR) | 24-29.5h | 17,325 | 79.5 | 9.0 | 11.5 | 94.5 |
+| conformal (CQR) | 30-35.5h | 17,313 | 79.1 | 9.3 | 11.6 | 94.6 |
+| conformal (CQR) | 36-41.5h | 17,301 | 78.1 | 9.9 | 12.0 | 94.7 |
+| conformal (CQR) | 42-48h | 18,729 | 77.5 | 10.1 | 12.4 | 94.9 |
+
+Per fold: calibration window, the adjustment it produced, and the coverage achieved on the fold's test month.
+
+| fold | calibration_window | n_calibration | calibration_raw_coverage_% | adjustment_gco2 | test_coverage_raw_% | test_coverage_conformal_% |
+|---|---|---|---|---|---|---|
+| 2025-10 | 2025-09 | 5,608 | 73.9 | 3.4 | 48.2 | 55.4 |
+| 2025-11 | 2025-10 | 5,804 | 48.5 | 17.1 | 74.1 | 87.7 |
+| 2025-12 | 2025-11 | 5,608 | 73.8 | 6.0 | 67.5 | 77.1 |
+| 2026-01 | 2025-12 | 5,804 | 71.6 | 6.6 | 79.1 | 85.9 |
+| 2026-02 | 2026-01 | 5,804 | 78.6 | 0.9 | 62.6 | 63.5 |
+| 2026-03 | 2026-02 | 5,216 | 65.6 | 11.7 | 69.5 | 86.9 |
+| 2026-04 | 2026-03 | 5,804 | 69.9 | 6.6 | 71.0 | 78.5 |
+| 2026-05 | 2026-04 | 5,608 | 70.7 | 7.7 | 73.0 | 84.5 |
+| 2026-06 | 2026-05 | 5,804 | 74.2 | 3.3 | 65.7 | 71.9 |
+| 2026-07 | 2026-06 | 5,608 | 66.2 | 9.2 | 74.9 | 89.0 |
+| 2026-08 | 2026-07 | 5,804 | 75.9 | 2.6 | 78.4 | 81.9 |
+| 2026-09 | 2026-08 | 5,800 | 76.7 | 2.2 | 73.9 | 78.8 |
 
 ## Feature attribution (weather-forecast model, final fold)
 
