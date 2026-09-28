@@ -1,4 +1,4 @@
-.PHONY: setup ingest quality features tune test lint all
+.PHONY: setup ingest quality features tune backtest evaluate test lint all
 
 setup:
 	uv sync
@@ -19,6 +19,13 @@ features:
 tune:
 	uv run python -m carbon_forecast.models.tune
 
+# Rolling-origin backtest (monthly retraining), then tables and figures.
+backtest:
+	uv run python -m carbon_forecast.backtest
+
+evaluate:
+	uv run python -m carbon_forecast.evaluate
+
 test:
 	uv run pytest -q
 
@@ -26,4 +33,4 @@ lint:
 	uv run ruff check .
 	uv run ruff format --check .
 
-all: setup ingest features tune
+all: setup ingest features tune backtest evaluate
