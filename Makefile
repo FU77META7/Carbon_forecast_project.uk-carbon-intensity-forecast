@@ -1,4 +1,4 @@
-.PHONY: setup ingest quality features tune backtest evaluate app test lint all clean
+.PHONY: setup ingest quality features tune backtest evaluate app notebook test lint all clean
 
 # DuckDB file for every pipeline step; override to rebuild elsewhere, e.g.
 #   make all DB=/tmp/fresh.duckdb
@@ -35,6 +35,10 @@ evaluate:
 # Stop the app before rebuilding: DuckDB blocks writers while it is open.
 app:
 	uv run --group app streamlit run app/streamlit_app.py
+
+# Re-executes the EDA notebook in place against the local database.
+notebook:
+	uv run --group notebook jupyter nbconvert --to notebook --execute --inplace notebooks/01_eda.ipynb
 
 test:
 	uv run pytest -q

@@ -21,6 +21,10 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.6",
 ]
+notebook = [
+    "ipykernel>=7.3.0",
+    "nbconvert>=7.17.1",
+]
 
 [build-system]
 requires = ["hatchling"]
