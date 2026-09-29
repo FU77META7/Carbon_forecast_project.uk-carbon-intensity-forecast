@@ -1,6 +1,6 @@
 # GB Carbon Intensity Forecast
 
-[![CI](https://github.com/FU77META7/Carbon_forecast_project.uk-carbon-intensity-forecast/actions/workflows/ci.yml/badge.svg)](https://github.com/FU77META7/Carbon_forecast_project.uk-carbon-intensity-forecast/actions/workflows/ci.yml)
+[![CI](https://github.com/FU77META7/uk-carbon-intensity-forecast/actions/workflows/ci.yml/badge.svg)](https://github.com/FU77META7/uk-carbon-intensity-forecast/actions/workflows/ci.yml)
 
 How well can the carbon intensity of the GB electricity grid (gCO2/kWh) be forecast
 24-48 hours ahead, at 30-minute resolution? This project ingests public grid and
